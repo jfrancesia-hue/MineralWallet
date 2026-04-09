@@ -1,15 +1,12 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { Text, MoneyText, Label, Card, Badge, Button } from '../src/components/ui';
+import { useWalletStore } from '../src/stores';
+import { useWallet } from '../src/hooks';
 import { colors } from '../src/theme/colors';
 import { spacing, layout } from '../src/theme/spacing';
 import { Svg, Path } from 'react-native-svg';
-
-const operations = [
-  { type: 'Compra USDT', date: '24 Oct, 2023 14:26', amount: '+ 150.00 USDT', sub: '$150.000 ARS', positive: true },
-  { type: 'Venta a Pesos', date: '18 Oct, 2023 09:12', amount: '- 50.00 USDT', sub: '$49.500 ARS', positive: false },
-];
 
 const faqs = [
   'Que es USDT?',
@@ -17,7 +14,48 @@ const faqs = [
   'Respaldo y Auditorias',
 ];
 
+const operations = [
+  { type: 'Compra USDT', date: '24 Oct, 2023 14:26', amount: '+ 150.00 USDT', sub: '$150.000 ARS', positive: true },
+  { type: 'Venta a Pesos', date: '18 Oct, 2023 09:12', amount: '- 50.00 USDT', sub: '$49.500 ARS', positive: false },
+];
+
 export default function ResguardoUSDTScreen() {
+  const usdtBalance = useWalletStore((s) => s.usdtBalance);
+  const usdtRate = useWalletStore((s) => s.usdtRate);
+  const arsEquivalent = usdtBalance * usdtRate;
+  const { buyUSDT, sellUSDT } = useWallet();
+  const [arsAmount, setArsAmount] = useState('');
+  const [usdtAmount, setUsdtAmount] = useState('');
+
+  const handleBuyUSDT = async () => {
+    const parsed = parseFloat(arsAmount);
+    if (isNaN(parsed) || parsed <= 0) {
+      Alert.alert('Monto inválido', 'Ingresá un monto en ARS válido.');
+      return;
+    }
+    try {
+      await buyUSDT(parsed);
+      Alert.alert('Compra exitosa', `Compraste USDT con $${parsed.toLocaleString('es-AR')} ARS.`);
+      setArsAmount('');
+    } catch {
+      Alert.alert('Error', 'No se pudo completar la compra. Intentá de nuevo.');
+    }
+  };
+
+  const handleSellUSDT = async () => {
+    const parsed = parseFloat(usdtAmount);
+    if (isNaN(parsed) || parsed <= 0) {
+      Alert.alert('Monto inválido', 'Ingresá un monto en USDT válido.');
+      return;
+    }
+    try {
+      await sellUSDT(parsed);
+      Alert.alert('Venta exitosa', `Vendiste ${parsed.toFixed(2)} USDT a pesos.`);
+      setUsdtAmount('');
+    } catch {
+      Alert.alert('Error', 'No se pudo completar la venta. Intentá de nuevo.');
+    }
+  };
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
@@ -37,10 +75,10 @@ export default function ResguardoUSDTScreen() {
         <Card variant="financial" style={styles.balanceCard}>
           <Text variant="labelSm" color={colors.textMuted}>Balance protegido</Text>
           <View style={styles.balanceRow}>
-            <Text variant="balance" color={colors.cyan}>340.00</Text>
+            <Text variant="balance" color={colors.cyan}>{usdtBalance.toFixed(2)}</Text>
             <Text variant="h3" color={colors.cyan}> USDT</Text>
           </View>
-          <Text variant="caption" color={colors.textMuted}>≈ $340.000 ARS</Text>
+          <Text variant="caption" color={colors.textMuted}>≈ ${arsEquivalent.toLocaleString('es-AR')} ARS</Text>
         </Card>
 
         {/* Chart placeholder */}
@@ -66,8 +104,8 @@ export default function ResguardoUSDTScreen() {
 
         {/* Actions */}
         <View style={styles.actionsRow}>
-          <Button title="Comprar USDT" onPress={() => {}} variant="primary" size="lg" style={styles.actionBtn} />
-          <Button title="Vender a Pesos" onPress={() => {}} variant="secondary" size="lg" style={styles.actionBtn} />
+          <Button title="Comprar USDT" onPress={handleBuyUSDT} variant="primary" size="lg" style={styles.actionBtn} />
+          <Button title="Vender a Pesos" onPress={handleSellUSDT} variant="secondary" size="lg" style={styles.actionBtn} />
         </View>
 
         {/* Operations */}
@@ -99,7 +137,7 @@ export default function ResguardoUSDTScreen() {
             <View style={styles.calcInput}>
               <Text variant="labelSm" color={colors.textMuted}>Tu entregas</Text>
               <View style={styles.calcField}>
-                <TextInput style={styles.calcValue} placeholder="0.00" placeholderTextColor={colors.textMuted} keyboardType="numeric" />
+                <TextInput style={styles.calcValue} placeholder="0.00" placeholderTextColor={colors.textMuted} keyboardType="numeric" value={arsAmount} onChangeText={setArsAmount} />
                 <Text variant="buttonSm" color={colors.textSecondary}>ARS</Text>
               </View>
             </View>
@@ -111,13 +149,13 @@ export default function ResguardoUSDTScreen() {
             <View style={styles.calcInput}>
               <Text variant="labelSm" color={colors.textMuted}>Tu recibes</Text>
               <View style={styles.calcField}>
-                <TextInput style={styles.calcValue} placeholder="0.00" placeholderTextColor={colors.textMuted} keyboardType="numeric" />
+                <TextInput style={styles.calcValue} placeholder="0.00" placeholderTextColor={colors.textMuted} keyboardType="numeric" value={usdtAmount} onChangeText={setUsdtAmount} />
                 <Text variant="buttonSm" color={colors.textSecondary}>USDT</Text>
               </View>
             </View>
           </View>
           <Text variant="caption" color={colors.textMuted} align="center" style={styles.rate}>
-            Tipo de cambio: 1 USDT = 1000 ARS
+            Tipo de cambio: 1 USDT = {usdtRate.toLocaleString('es-AR')} ARS
           </Text>
         </Card>
 

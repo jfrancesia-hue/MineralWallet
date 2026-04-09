@@ -1,81 +1,107 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mmkvStorage } from './middleware/mmkvPersist';
-
-export interface Benefit {
-  id: string;
-  category: string;
-  merchant: string;
-  discount: string;
-  description: string;
-  color: string;
-}
-
-export interface NearbyBusiness {
-  id: string;
-  name: string;
-  distance: string;
-  category: string;
-  discount: string;
-  hasQR: boolean;
-}
-
-export interface SavingsEntry {
-  id: string;
-  store: string;
-  amount: number;
-  date: string;
-  category: string;
-}
+import { benefitsService } from '../services/benefits.service';
+import type { NearbyBusiness, SavingsEntry, BenefitCategory, FeaturedBenefit } from '../types';
 
 interface BenefitsState {
   totalSavingsYear: number;
-  categories: { name: string; discount: string; color: string }[];
-  featuredBenefit: { title: string; description: string; maxAmount: number } | null;
+  categories: BenefitCategory[];
+  featuredBenefit: FeaturedBenefit | null;
   nearbyBusinesses: NearbyBusiness[];
   savingsHistory: SavingsEntry[];
   activeBenefitsCount: number;
-
-  recordSaving: (entry: Omit<SavingsEntry, 'id'>) => void;
+  isLoading: boolean;
+  error: string | null;
 }
 
-export const useBenefitsStore = create<BenefitsState>()(
+interface BenefitsActions {
+  fetchSummary: () => Promise<void>;
+  fetchNearby: (lat: number, lng: number) => Promise<void>;
+  redeemBenefit: (businessId: string, amount: number) => Promise<void>;
+  recordSaving: (entry: Omit<SavingsEntry, 'id'>) => void;
+  clearError: () => void;
+}
+
+type BenefitsStore = BenefitsState & BenefitsActions;
+
+const initialState: BenefitsState = {
+  totalSavingsYear: 0,
+  categories: [],
+  featuredBenefit: null,
+  nearbyBusinesses: [],
+  savingsHistory: [],
+  activeBenefitsCount: 0,
+  isLoading: false,
+  error: null,
+};
+
+export const useBenefitsStore = create<BenefitsStore>()(
   persist(
     (set) => ({
-      totalSavingsYear: 47800,
-      categories: [
-        { name: 'Farmacia', discount: '20%', color: '#00C48C' },
-        { name: 'Supermercado', discount: '15%', color: '#00E5FF' },
-        { name: 'Optica', discount: '10%', color: '#C87533' },
-        { name: 'Combustible', discount: '5%', color: '#FFB020' },
-        { name: 'Indumentaria', discount: '25%', color: '#6B4EFF' },
-        { name: 'Celulares', discount: '12 cuotas', color: '#00E5FF' },
-        { name: 'Educacion Hijos', discount: 'Becas $30k', color: '#00C48C' },
-        { name: 'Salud Familiar', discount: 'Cobertura', color: '#FF3B4A' },
-      ],
-      featuredBenefit: {
-        title: 'Turismo Familiar',
-        description: 'Hasta 35% en alojamientos de montana y excursiones exclusivas para trabajadores del sector.',
-        maxAmount: 150000,
+      ...initialState,
+
+      fetchSummary: async () => {
+        set({ isLoading: true, error: null });
+        const response = await benefitsService.getSummary();
+        if (response.success && response.data) {
+          set({
+            totalSavingsYear: response.data.totalSavingsYear,
+            activeBenefitsCount: response.data.activeBenefitsCount,
+            categories: response.data.categories,
+            featuredBenefit: response.data.featuredBenefit,
+            nearbyBusinesses: (response.data as any).nearbyBusinesses ?? [],
+            savingsHistory: (response.data as any).savingsHistory ?? [],
+            isLoading: false,
+          });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al obtener beneficios' });
+        }
       },
-      nearbyBusinesses: [
-        { id: 'nb-1', name: 'Mercado Central Industrial', distance: '0.8 km', category: 'Alimentos', discount: '15%', hasQR: true },
-        { id: 'nb-2', name: 'Viandas del Minero', distance: '1.2 km', category: 'Alimentos', discount: '10%', hasQR: true },
-        { id: 'nb-3', name: 'Gimnasio El Risco', distance: '2.1 km', category: 'Deporte', discount: '20%', hasQR: false },
-      ],
-      savingsHistory: [
-        { id: 's-1', store: 'Farmacity', amount: 1200, date: '2026-04-04', category: 'Farmacia' },
-        { id: 's-2', store: 'Shell Arroyo', amount: 850, date: '2026-04-02', category: 'Combustible' },
-        { id: 's-3', store: 'Carrefour Express', amount: 10520, date: '2026-03-30', category: 'Supermercado' },
-      ],
-      activeBenefitsCount: 3,
+
+      fetchNearby: async (lat, lng) => {
+        set({ isLoading: true, error: null });
+        const response = await benefitsService.getNearbyBusinesses(lat, lng);
+        if (response.success && response.data) {
+          set({ nearbyBusinesses: response.data, isLoading: false });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al obtener comercios cercanos' });
+        }
+      },
+
+      redeemBenefit: async (businessId, amount) => {
+        set({ isLoading: true, error: null });
+        const response = await benefitsService.redeemBenefit(businessId, amount);
+        if (response.success && response.data) {
+          set((state) => ({
+            savingsHistory: [response.data!, ...state.savingsHistory],
+            totalSavingsYear: state.totalSavingsYear + amount,
+            isLoading: false,
+          }));
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al canjear beneficio' });
+        }
+      },
 
       recordSaving: (entry) =>
         set((state) => ({
           savingsHistory: [{ ...entry, id: `s-${Date.now()}` }, ...state.savingsHistory],
           totalSavingsYear: state.totalSavingsYear + entry.amount,
         })),
+
+      clearError: () => set({ error: null }),
     }),
-    { name: 'mineral-benefits', storage: mmkvStorage }
+    {
+      name: 'mineral-benefits',
+      storage: mmkvStorage,
+      partialize: (state) => ({
+        totalSavingsYear: state.totalSavingsYear,
+        categories: state.categories,
+        featuredBenefit: state.featuredBenefit,
+        nearbyBusinesses: state.nearbyBusinesses,
+        savingsHistory: state.savingsHistory,
+        activeBenefitsCount: state.activeBenefitsCount,
+      }),
+    }
   )
 );

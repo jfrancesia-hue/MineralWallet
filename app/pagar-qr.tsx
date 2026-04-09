@@ -90,6 +90,12 @@ export default function PagarQRScreen() {
 
       {/* Bottom Tab (payment context) */}
       <View style={styles.bottomBar}>
+        <Button
+          title="Escanear QR"
+          onPress={() => router.push('/scan-qr')}
+          variant="primary"
+          size="lg"
+        />
         <Button title="Confirmar pago" onPress={() => {}} variant="primary" size="lg" />
       </View>
     </View>

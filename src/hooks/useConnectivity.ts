@@ -6,9 +6,13 @@ export function useConnectivity() {
   const { isOnline, lastOnlineAt, setOnline, pendingSyncCount, isSyncing } = useConnectivityStore();
 
   useEffect(() => {
+    // Initial connectivity check on mount
+    fetch('https://clients3.google.com/generate_204', { method: 'HEAD', signal: AbortSignal.timeout(5000) })
+      .then(() => setOnline(true))
+      .catch(() => setOnline(false));
+
     const handleAppState = (state: AppStateStatus) => {
       if (state === 'active') {
-        // Check connectivity when app comes to foreground
         fetch('https://clients3.google.com/generate_204', { method: 'HEAD', signal: AbortSignal.timeout(5000) })
           .then(() => setOnline(true))
           .catch(() => setOnline(false));

@@ -1,14 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { colors } from '../src/theme/colors';
+import { useAuthStore } from '../src/stores';
+import { useOfflineSync } from '../src/hooks/useOfflineSync';
+import { usePushNotifications } from '../src/hooks/usePushNotifications';
+import { useRealtimeNotifications } from '../src/hooks/useRealtimeNotifications';
+import { ErrorBoundary } from '../src/components/shared/ErrorBoundary';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const hydrate = useAuthStore((s) => s.hydrate);
+  useOfflineSync();
+  usePushNotifications();
+  useRealtimeNotifications();
+
   const [fontsLoaded] = useFonts({
     'JetBrainsMono': require('../src/assets/fonts/JetBrainsMono-Regular.ttf'),
     'JetBrainsMono-Bold': require('../src/assets/fonts/JetBrainsMono-Bold.ttf'),
@@ -23,7 +33,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      hydrate().finally(() => SplashScreen.hideAsync());
     }
   }, [fontsLoaded]);
 
@@ -37,7 +47,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="light" backgroundColor={colors.background} />
       <Stack
         screenOptions={{
@@ -56,7 +66,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
-    </>
+    </ErrorBoundary>
   );
 }
 

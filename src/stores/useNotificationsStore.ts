@@ -1,75 +1,104 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mmkvStorage } from './middleware/mmkvPersist';
-
-export type NotifCategory = 'plata' | 'turnos' | 'seguridad' | 'salud' | 'beneficios';
-
-export interface Notification {
-  id: string;
-  title: string;
-  description: string;
-  category: NotifCategory;
-  timestamp: number;
-  read: boolean;
-  actionRoute?: string;
-}
+import { notificationsService } from '../services/notifications.service';
+import type { Notification } from '../types';
 
 interface NotificationsState {
   notifications: Notification[];
   unreadCount: number;
-
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
-  addNotification: (notif: Omit<Notification, 'id' | 'read'>) => void;
-  clearAll: () => void;
+  isLoading: boolean;
+  error: string | null;
 }
 
-export const useNotificationsStore = create<NotificationsState>()(
-  persist(
-    (set) => ({
-      notifications: [
-        {
-          id: 'n-1', title: 'Adelanto acreditado', description: '$150.000 disponibles en tu cuenta',
-          category: 'plata', timestamp: Date.now() - 3600000, read: false, actionRoute: '/plata',
-        },
-        {
-          id: 'n-2', title: 'Recordatorio turno', description: 'Manana inicia tu descanso (7 dias)',
-          category: 'turnos', timestamp: Date.now() - 10800000, read: false, actionRoute: '/turnos',
-        },
-        {
-          id: 'n-3', title: 'Renovar proteccion auditiva', description: 'Vence el 20/04 — solicitar reposicion',
-          category: 'seguridad', timestamp: Date.now() - 18000000, read: false, actionRoute: '/seguridad',
-        },
-        {
-          id: 'n-4', title: 'Nuevo curso disponible', description: 'Operacion de Grua Puente (+500 XP)',
-          category: 'turnos', timestamp: Date.now() - 28800000, read: true, actionRoute: '/carrera',
-        },
-        {
-          id: 'n-5', title: 'Examen periodico 15/05', description: 'Preparacion necesaria — revisar checklist',
-          category: 'salud', timestamp: Date.now() - 86400000, read: true, actionRoute: '/salud',
-        },
-        {
-          id: 'n-6', title: 'Hidratate bien', description: 'Llevas 5 dias consecutivos en turno',
-          category: 'salud', timestamp: Date.now() - 86400000, read: true,
-        },
-        {
-          id: 'n-7', title: '25% dto Indumentaria', description: 'Nuevo descuento en Indumentaria Minera SRL',
-          category: 'beneficios', timestamp: Date.now() - 259200000, read: true, actionRoute: '/beneficios',
-        },
-      ],
-      unreadCount: 3,
+interface NotificationsActions {
+  fetchAll: () => Promise<void>;
+  fetchUnreadCount: () => Promise<void>;
+  markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  addNotification: (notif: Omit<Notification, 'id' | 'read'>) => void;
+  registerPushToken: (token: string, platform: 'ios' | 'android') => Promise<void>;
+  clearAll: () => void;
+  clearError: () => void;
+}
 
-      markAsRead: (id) =>
+type NotificationsStore = NotificationsState & NotificationsActions;
+
+const initialState: NotificationsState = {
+  notifications: [],
+  unreadCount: 0,
+  isLoading: false,
+  error: null,
+};
+
+export const useNotificationsStore = create<NotificationsStore>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
+
+      fetchAll: async () => {
+        set({ isLoading: true, error: null });
+        const response = await notificationsService.getAll();
+        if (response.success && response.data) {
+          const notifications = response.data;
+          set({
+            notifications,
+            unreadCount: notifications.filter((n) => !n.read).length,
+            isLoading: false,
+          });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al obtener notificaciones' });
+        }
+      },
+
+      fetchUnreadCount: async () => {
+        const response = await notificationsService.getUnreadCount();
+        if (response.success && response.data) {
+          set({ unreadCount: response.data.count });
+        }
+      },
+
+      markAsRead: async (id) => {
+        // Optimistic update
         set((state) => {
           const updated = state.notifications.map((n) => n.id === id ? { ...n, read: true } : n);
           return { notifications: updated, unreadCount: updated.filter((n) => !n.read).length };
-        }),
+        });
 
-      markAllAsRead: () =>
+        const prevNotifications = get().notifications;
+        const response = await notificationsService.markAsRead(id);
+        if (response.success && response.data) {
+          set((state) => ({
+            notifications: state.notifications.map((n) => n.id === id ? response.data! : n),
+          }));
+        } else {
+          // Roll back optimistic update
+          set({
+            notifications: prevNotifications,
+            unreadCount: prevNotifications.filter((n) => !n.read).length,
+            error: response.error?.message ?? 'Error al marcar como leida',
+          });
+        }
+      },
+
+      markAllAsRead: async () => {
+        // Optimistic update
+        const prevNotifications = get().notifications;
         set((state) => ({
           notifications: state.notifications.map((n) => ({ ...n, read: true })),
           unreadCount: 0,
-        })),
+        }));
+
+        const response = await notificationsService.markAllAsRead();
+        if (!response.success) {
+          // Roll back optimistic update
+          set({
+            notifications: prevNotifications,
+            unreadCount: prevNotifications.filter((n) => !n.read).length,
+            error: response.error?.message ?? 'Error al marcar todas como leidas',
+          });
+        }
+      },
 
       addNotification: (notif) =>
         set((state) => ({
@@ -77,8 +106,24 @@ export const useNotificationsStore = create<NotificationsState>()(
           unreadCount: state.unreadCount + 1,
         })),
 
+      registerPushToken: async (token, platform) => {
+        const response = await notificationsService.registerPushToken(token, platform);
+        if (!response.success) {
+          set({ error: response.error?.message ?? 'Error al registrar token de notificaciones' });
+        }
+      },
+
       clearAll: () => set({ notifications: [], unreadCount: 0 }),
+
+      clearError: () => set({ error: null }),
     }),
-    { name: 'mineral-notifications', storage: mmkvStorage }
+    {
+      name: 'mineral-notifications',
+      storage: mmkvStorage,
+      partialize: (state) => ({
+        notifications: state.notifications,
+        unreadCount: state.unreadCount,
+      }),
+    }
   )
 );

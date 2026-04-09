@@ -1,38 +1,74 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Text, MoneyText, Label, Card, Badge, Button, ActionCircle } from '../../src/components/ui';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { router } from 'expo-router';
+import { haptics } from '../../src/utils/haptics';
+import { Text, MoneyText, Label, Card, Badge, Button, ActionCircle, SkeletonCard } from '../../src/components/ui';
+import { TransactionCard } from '../../src/components/cards';
+import { SliderInput } from '../../src/components/forms';
+import { ContactPicker } from '../../src/components/forms';
+import { useWalletStore } from '../../src/stores';
+import { useWallet } from '../../src/hooks';
 import { colors } from '../../src/theme/colors';
 import { spacing, layout } from '../../src/theme/spacing';
 import { Svg, Path, Rect } from 'react-native-svg';
+import * as Clipboard from 'expo-clipboard';
 
 const actionButtons = [
-  { id: 'transferir', label: 'Transferir', color: colors.copper },
-  { id: 'cobrar', label: 'Cobrar', color: colors.emerald },
-  { id: 'pagarqr', label: 'Pagar QR', color: colors.cyan },
-  { id: 'adelanto', label: 'Adelanto', color: colors.amber },
-  { id: 'recargar', label: 'Recargar', color: colors.purple },
-];
-
-const familyContacts = [
-  { id: '1', name: 'Maria', role: 'Esposa' },
-  { id: '2', name: 'Mama', role: 'Madre' },
-  { id: '3', name: 'Hermano', role: 'Hermano' },
+  { id: 'transferir', label: 'Transferir', color: colors.copper, route: '/enviar' },
+  { id: 'cobrar', label: 'Cobrar', color: colors.emerald, route: '/pagar-qr' },
+  { id: 'pagarqr', label: 'Pagar QR', color: colors.cyan, route: '/pagar-qr' },
+  { id: 'adelanto', label: 'Adelanto', color: colors.amber, route: null },
+  { id: 'recargar', label: 'Recargar', color: colors.purple, route: null },
 ];
 
 const services = [
-  { id: '1', name: 'Internet', icon: 'wifi' },
-  { id: '2', name: 'Electricidad', icon: 'zap' },
-  { id: '3', name: 'Agua', icon: 'droplet' },
-  { id: '4', name: 'Recargas', icon: 'phone' },
+  { id: '1', name: 'Internet', color: colors.cyan },
+  { id: '2', name: 'Electricidad', color: colors.amber },
+  { id: '3', name: 'Agua', color: colors.cyan },
+  { id: '4', name: 'Recargas', color: colors.purple },
 ];
 
 export default function PlataScreen() {
-  const [adelantoAmount, setAdelantoAmount] = useState(125000);
+  const balance = useWalletStore((s) => s.balance);
+  const cvu = useWalletStore((s) => s.cvu);
+  const alias = useWalletStore((s) => s.alias);
+  const adelantoDisponible = useWalletStore((s) => s.adelantoDisponible);
+  const transactions = useWalletStore((s) => s.transactions);
+  const familyContacts = useWalletStore((s) => s.familyContacts);
+  const isLoading = useWalletStore((s) => s.isLoading);
+  const { requestAdvance, fetchAll } = useWallet();
+  const [adelantoAmount, setAdelantoAmount] = useState(Math.round(adelantoDisponible / 2));
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => { fetchAll(); }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchAll();
+    setRefreshing(false);
+  }, [fetchAll]);
+
+  const handleAdelanto = async () => {
+    const success = await requestAdvance(adelantoAmount);
+    if (success) {
+      Alert.alert('Adelanto solicitado', `Adelanto de $${adelantoAmount.toLocaleString('es-AR')} solicitado con éxito.`);
+    } else {
+      Alert.alert('Error', 'No se pudo solicitar el adelanto. Intentá de nuevo.');
+    }
+  };
+
+  const handleCopy = async (text: string, field: string) => {
+    haptics.light();
+    await Clipboard.setStringAsync(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.copper} colors={[colors.copper]} />}>
+        {isLoading && !refreshing ? <SkeletonCard /> : null}
         {/* Header */}
         <View style={styles.header}>
           <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
@@ -45,19 +81,20 @@ export default function PlataScreen() {
         {/* Balance Hero */}
         <Card variant="financial" style={styles.balanceCard}>
           <Label color={colors.copper}>Balance disponible</Label>
-          <MoneyText amount="847.250" variant="balance" color={colors.textPrimary} style={styles.balanceAmount} />
+          <MoneyText amount={balance} variant="balance" color={colors.textPrimary} style={styles.balanceAmount} />
 
           {/* CVU */}
           <View style={styles.cvuRow}>
             <View style={styles.cvuBox}>
               <Text variant="labelSm" color={colors.textMuted}>CVU</Text>
-              <Text variant="moneySm" color={colors.textSecondary}>00000031000123456789...</Text>
+              <Text variant="moneySm" color={colors.textSecondary} numberOfLines={1}>
+                {cvu}
+              </Text>
             </View>
-            <TouchableOpacity style={styles.copyBtn}>
-              <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
-                <Rect x={9} y={9} width={13} height={13} rx={2} stroke={colors.cyan} strokeWidth={1.5} />
-                <Path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke={colors.cyan} strokeWidth={1.5} />
-              </Svg>
+            <TouchableOpacity style={styles.copyBtn} onPress={() => handleCopy(cvu, 'cvu')}>
+              <Text variant="micro" color={copiedField === 'cvu' ? colors.emerald : colors.cyan}>
+                {copiedField === 'cvu' ? 'Copiado' : 'Copiar'}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -65,13 +102,12 @@ export default function PlataScreen() {
           <View style={styles.cvuRow}>
             <View style={styles.cvuBox}>
               <Text variant="labelSm" color={colors.textMuted}>Alias</Text>
-              <Text variant="moneySm" color={colors.textSecondary}>MINA.ORO.WALLE</Text>
+              <Text variant="moneySm" color={colors.textSecondary}>{alias}</Text>
             </View>
-            <TouchableOpacity style={styles.copyBtn}>
-              <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
-                <Rect x={9} y={9} width={13} height={13} rx={2} stroke={colors.cyan} strokeWidth={1.5} />
-                <Path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke={colors.cyan} strokeWidth={1.5} />
-              </Svg>
+            <TouchableOpacity style={styles.copyBtn} onPress={() => handleCopy(alias, 'alias')}>
+              <Text variant="micro" color={copiedField === 'alias' ? colors.emerald : colors.cyan}>
+                {copiedField === 'alias' ? 'Copiado' : 'Copiar'}
+              </Text>
             </TouchableOpacity>
           </View>
         </Card>
@@ -85,7 +121,7 @@ export default function PlataScreen() {
                 icon={<View style={[styles.actionDot, { backgroundColor: action.color }]} />}
                 label={action.label}
                 color={action.color}
-                onPress={() => {}}
+                onPress={() => action.route && router.push(action.route as any)}
               />
             ))}
           </View>
@@ -97,7 +133,7 @@ export default function PlataScreen() {
             <View>
               <Text variant="h3" color={colors.textPrimary}>Adelanto de Sueldo</Text>
               <Text variant="bodySm" color={colors.textSecondary}>
-                Solicita hasta <Text variant="bodySm" color={colors.copper}>$200.000</Text>
+                Solicita hasta <Text variant="bodySm" color={colors.copper}>${adelantoDisponible.toLocaleString('es-AR')}</Text>
               </Text>
             </View>
             <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
@@ -105,24 +141,20 @@ export default function PlataScreen() {
             </Svg>
           </View>
 
-          {/* Slider visual */}
-          <View style={styles.sliderContainer}>
-            <View style={styles.sliderTrack}>
-              <View style={[styles.sliderFill, { width: `${(adelantoAmount / 200000) * 100}%` }]} />
-              <View style={[styles.sliderThumb, { left: `${(adelantoAmount / 200000) * 100}%` }]} />
-            </View>
-            <View style={styles.sliderLabels}>
-              <Text variant="micro" color={colors.textMuted}>$10.000</Text>
-              <MoneyText amount={adelantoAmount.toLocaleString('es-AR')} variant="moneySm" color={colors.copper} />
-              <Text variant="micro" color={colors.textMuted}>$200.000</Text>
-            </View>
-          </View>
+          <SliderInput
+            value={adelantoAmount}
+            min={10000}
+            max={adelantoDisponible}
+            step={5000}
+            onValueChange={setAdelantoAmount}
+            accentColor={colors.copper}
+          />
 
-          <Button title="Solicitar Adelanto" onPress={() => {}} variant="primary" size="lg" />
+          <Button title="Solicitar Adelanto" onPress={handleAdelanto} variant="primary" size="lg" />
         </Card>
 
         {/* Protege tu sueldo (USDT) */}
-        <Card style={styles.usdtCard}>
+        <Card style={styles.usdtCard} onPress={() => router.push('/resguardo-usdt')}>
           <View style={styles.usdtHeader}>
             <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
               <Path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill={colors.emeraldMuted} stroke={colors.emerald} strokeWidth={1.5} />
@@ -141,24 +173,11 @@ export default function PlataScreen() {
         <View style={styles.sectionHeader}>
           <Label color={colors.textMuted}>Enviar a Familia</Label>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.familyRow}>
-            {familyContacts.map((contact) => (
-              <TouchableOpacity key={contact.id} style={styles.familyCard}>
-                <View style={styles.familyAvatar}>
-                  <Text variant="bodySm" color={colors.copper}>{contact.name[0]}</Text>
-                </View>
-                <Text variant="caption" color={colors.textPrimary}>{contact.name}</Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity style={styles.familyCard}>
-              <View style={[styles.familyAvatar, styles.familyAddAvatar]}>
-                <Text variant="h3" color={colors.textMuted}>+</Text>
-              </View>
-              <Text variant="caption" color={colors.textMuted}>Nuevo</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        <ContactPicker
+          contacts={familyContacts}
+          onSelect={(contact) => router.push({ pathname: '/enviar-familia', params: { contactId: contact.id } })}
+          onAddPress={() => router.push('/enviar-familia')}
+        />
 
         {/* Pagos & Servicios */}
         <View style={styles.sectionHeader}>
@@ -170,13 +189,21 @@ export default function PlataScreen() {
         <View style={styles.servicesGrid}>
           {services.map((service) => (
             <TouchableOpacity key={service.id} style={styles.serviceCard}>
-              <View style={styles.serviceIcon}>
-                <View style={[styles.actionDot, { backgroundColor: colors.cyan }]} />
+              <View style={[styles.serviceIcon, { backgroundColor: `${service.color}15` }]}>
+                <View style={[styles.actionDot, { backgroundColor: service.color }]} />
               </View>
               <Text variant="buttonSm" color={colors.textPrimary}>{service.name}</Text>
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Ultimos movimientos */}
+        <View style={styles.sectionHeader}>
+          <Label color={colors.textMuted}>Ultimos movimientos</Label>
+        </View>
+        {transactions.slice(0, 4).map((tx) => (
+          <TransactionCard key={tx.id} transaction={tx} />
+        ))}
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
@@ -219,10 +246,10 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   copyBtn: {
-    width: layout.touchTarget,
-    height: 36,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    minWidth: 52,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   actionsScroll: {
     marginBottom: spacing.xl,
@@ -244,41 +271,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: spacing.xl,
-  },
-  sliderContainer: {
-    marginBottom: spacing.xl,
-  },
-  sliderTrack: {
-    height: 6,
-    backgroundColor: colors.elevated,
-    borderRadius: 3,
-    position: 'relative',
-  },
-  sliderFill: {
-    height: '100%',
-    backgroundColor: colors.copper,
-    borderRadius: 3,
-  },
-  sliderThumb: {
-    position: 'absolute',
-    top: -7,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: colors.textPrimary,
-    marginLeft: -10,
-    shadowColor: colors.copper,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  sliderLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.md,
-    alignItems: 'center',
+    marginBottom: spacing.md,
   },
   usdtCard: {
     marginBottom: spacing.xl,
@@ -297,29 +290,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.md,
-  },
-  familyRow: {
-    flexDirection: 'row',
-    gap: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  familyCard: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  familyAvatar: {
-    width: layout.avatarLg,
-    height: layout.avatarLg,
-    borderRadius: layout.avatarLg / 2,
-    backgroundColor: colors.surface,
-    borderWidth: 2,
-    borderColor: colors.copper,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  familyAddAvatar: {
-    borderColor: colors.textMuted,
-    borderStyle: 'dashed',
+    marginTop: spacing.md,
   },
   servicesGrid: {
     flexDirection: 'row',
@@ -343,7 +314,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: colors.cyanMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -1,14 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated, Linking } from 'react-native';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { View, StyleSheet, TouchableOpacity, Animated, Linking, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text, Button } from '../../src/components/ui';
+import { OfflineBanner } from '../../src/components/shared/OfflineBanner';
+import { useSafetyStore, useConnectivityStore } from '../../src/stores';
 import { colors } from '../../src/theme/colors';
 import { spacing, layout } from '../../src/theme/spacing';
 import { Svg, Path } from 'react-native-svg';
+import { haptics } from '../../src/utils/haptics';
 
 export default function SOSScreen() {
-  const [countdown, setCountdown] = useState(30);
-  const [activated, setActivated] = useState(false);
+  const {
+    sosActive,
+    sosCountdown,
+    emergencyContacts,
+    activateSOS,
+    cancelSOS,
+    resetCountdown,
+    fetchSummary,
+  } = useSafetyStore();
+
+  useEffect(() => { fetchSummary(); }, []);
+  const isOnline = useConnectivityStore((s) => s.isOnline);
+
+  const [countdown, setCountdown] = useState(sosCountdown);
+  const [activated, setActivated] = useState(sosActive);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -31,26 +47,38 @@ export default function SOSScreen() {
   }, [pulseAnim]);
 
   useEffect(() => {
-    if (countdown <= 0) {
-      setActivated(true);
+    if (activated || countdown <= 0) {
+      if (countdown <= 0 && !activated) {
+        handleActivate();
+      }
       return;
     }
     const timer = setInterval(() => setCountdown((c) => c - 1), 1000);
     return () => clearInterval(timer);
-  }, [countdown]);
+  }, [countdown, activated]);
 
-  const handleActivateSOS = () => {
+  const handleActivate = () => {
+    haptics.heavy();
     setActivated(true);
+    // TODO: Obtener coordenadas reales con expo-location
+    activateSOS(-27.3855, -66.9456);
   };
 
   const handleCancel = () => {
+    haptics.medium();
     setCountdown(30);
     setActivated(false);
+    cancelSOS();
+    resetCountdown();
   };
 
   const handleCall = (number: string) => {
     Linking.openURL(`tel:${number}`);
   };
+
+  const medicalContact = emergencyContacts.find((c) => c.role === 'medical');
+  const mineContact = emergencyContacts.find((c) => c.role === 'mine');
+  const familyContact = emergencyContacts.find((c) => c.role === 'family');
 
   return (
     <LinearGradient
@@ -59,12 +87,18 @@ export default function SOSScreen() {
     >
       {/* Offline indicator */}
       <View style={styles.offlineBar}>
-        <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
-          <Path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" stroke={colors.textPrimary} strokeWidth={1.5} strokeLinecap="round" />
-        </Svg>
-        <Text variant="labelSm" color={colors.textPrimary}>Modo offline activo</Text>
+        {!isOnline && (
+          <>
+            <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
+              <Path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0M12 20h.01" stroke={colors.textPrimary} strokeWidth={1.5} strokeLinecap="round" />
+            </Svg>
+            <Text variant="labelSm" color={colors.textPrimary}>Modo offline activo</Text>
+          </>
+        )}
         <View style={styles.signalBars}>
-          <Text variant="labelSm" color={colors.textPrimary}>Senal satelital</Text>
+          <Text variant="labelSm" color={colors.textPrimary}>
+            {isOnline ? 'Conectado' : 'Senal satelital'}
+          </Text>
         </View>
       </View>
 
@@ -74,63 +108,97 @@ export default function SOSScreen() {
       </Text>
 
       {/* Countdown */}
-      <View style={styles.countdownContainer}>
-        <StatusDotInline />
-        <Text variant="moneySm" color={colors.textPrimary} align="center">
-          SOS se activa en {countdown}s
-        </Text>
-      </View>
+      {!activated && (
+        <View style={styles.countdownContainer}>
+          <View style={styles.countdownDot} />
+          <Text variant="moneySm" color={colors.textPrimary} align="center">
+            SOS se activa en {countdown}s
+          </Text>
+        </View>
+      )}
+
+      {activated && (
+        <View style={styles.countdownContainer}>
+          <View style={[styles.countdownDot, { backgroundColor: colors.red }]} />
+          <Text variant="moneySm" color={colors.textPrimary} align="center">
+            SOS ACTIVADO — Ayuda en camino
+          </Text>
+        </View>
+      )}
 
       {/* Main Buttons */}
       <Animated.View style={[styles.mainButtonContainer, { transform: [{ scale: pulseAnim }] }]}>
-        <TouchableOpacity onPress={handleActivateSOS} style={styles.sosMainButton} activeOpacity={0.8}>
+        <TouchableOpacity
+          onPress={handleActivate}
+          style={[styles.sosMainButton, activated && styles.sosActivated]}
+          activeOpacity={0.8}
+        >
           <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
             <Path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z" fill={colors.textPrimary} />
           </Svg>
           <Text variant="h2" color={colors.textPrimary} align="center">
-            SI - ACTIVAR SOS
+            {activated ? 'SOS ACTIVADO' : 'SI - ACTIVAR SOS'}
           </Text>
           <Text variant="caption" color="rgba(255,255,255,0.7)" align="center">
-            Enviar coordenadas y alerta inmediata
+            {activated ? 'Coordenadas enviadas al centro de control' : 'Enviar coordenadas y alerta inmediata'}
           </Text>
         </TouchableOpacity>
       </Animated.View>
 
-      <TouchableOpacity style={styles.reportButton} onPress={() => {}} activeOpacity={0.8}>
-        <Text variant="h3" color={colors.textPrimary} align="center">
-          REPORTAR CONDICION
-        </Text>
-        <Text variant="caption" color="rgba(255,255,255,0.7)" align="center">
-          Lesion, derrumbe o falla critica
-        </Text>
-      </TouchableOpacity>
+      {!activated && (
+        <TouchableOpacity style={styles.reportButton} onPress={() => {
+          Alert.alert(
+            'Reportar Condicion',
+            'Selecciona el tipo de incidente:',
+            [
+              { text: 'Lesion', onPress: () => { activateSOS(-27.3855, -66.9456); } },
+              { text: 'Derrumbe', onPress: () => { activateSOS(-27.3855, -66.9456); } },
+              { text: 'Falla Critica', onPress: () => { activateSOS(-27.3855, -66.9456); } },
+              { text: 'Cancelar', style: 'cancel' },
+            ]
+          );
+        }} activeOpacity={0.8}>
+          <Text variant="h3" color={colors.textPrimary} align="center">
+            REPORTAR CONDICION
+          </Text>
+          <Text variant="caption" color="rgba(255,255,255,0.7)" align="center">
+            Lesion, derrumbe o falla critica
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Emergency Contacts */}
       <View style={styles.contactsSection}>
-        <EmergencyContact
-          label="Public Utility"
-          title="107"
-          subtitle="Emergencias Medicas"
-          buttonLabel="Llamar Ahora"
-          onPress={() => handleCall('107')}
-          borderColor={colors.cyan}
-        />
-        <EmergencyContact
-          label="Internal Site"
-          title="Emergency Mine"
-          subtitle="Rescate en Mina"
-          buttonLabel="Enlace Directo"
-          onPress={() => {}}
-          borderColor={colors.amber}
-        />
-        <EmergencyContact
-          label="Primary Kin"
-          title="Maria (Family)"
-          subtitle="Contacto de Enlace"
-          buttonLabel="Enviar SMS Panico"
-          onPress={() => {}}
-          borderColor={colors.purple}
-        />
+        {medicalContact && (
+          <EmergencyContactRow
+            label={medicalContact.label}
+            title={medicalContact.phone}
+            subtitle={medicalContact.name}
+            buttonLabel="Llamar Ahora"
+            onPress={() => handleCall(medicalContact.phone)}
+            borderColor={colors.cyan}
+          />
+        )}
+        {mineContact && (
+          <EmergencyContactRow
+            label={mineContact.label}
+            title={mineContact.name}
+            subtitle="Rescate en Mina"
+            buttonLabel="Enlace Directo"
+            onPress={() => handleCall(mineContact.phone)}
+            borderColor={colors.amber}
+          />
+        )}
+        {familyContact && (
+          <EmergencyContactRow
+            label={familyContact.label}
+            title={`${familyContact.name} (Family)`}
+            subtitle="Contacto de Enlace"
+            buttonLabel="Enviar SMS Panico"
+            onPress={() => Linking.openURL(`sms:${familyContact.phone}`)}
+            borderColor={colors.purple}
+          />
+        )}
       </View>
 
       {/* Cancel */}
@@ -147,13 +215,7 @@ export default function SOSScreen() {
   );
 }
 
-function StatusDotInline() {
-  return (
-    <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.amber }} />
-  );
-}
-
-function EmergencyContact({
+function EmergencyContactRow({
   label,
   title,
   subtitle,
@@ -197,6 +259,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: spacing.xl,
+    gap: spacing.sm,
   },
   signalBars: {
     flexDirection: 'row',
@@ -218,6 +281,12 @@ const styles = StyleSheet.create({
     borderRadius: layout.borderRadius.full,
     alignSelf: 'center',
   },
+  countdownDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.amber,
+  },
   mainButtonContainer: {
     marginBottom: spacing.md,
   },
@@ -230,6 +299,10 @@ const styles = StyleSheet.create({
     minHeight: 80,
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.2)',
+  },
+  sosActivated: {
+    backgroundColor: 'rgba(255,59,74,1)',
+    borderColor: 'rgba(255,255,255,0.5)',
   },
   reportButton: {
     backgroundColor: 'rgba(255,176,32,0.6)',

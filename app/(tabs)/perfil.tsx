@@ -1,38 +1,88 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
-import { Text, Label, Card, Badge } from '../../src/components/ui';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { router } from 'expo-router';
+import { Text, Label, Card, Badge, SkeletonCard } from '../../src/components/ui';
+import { useAuthStore, useSafetyStore, useCareerStore, useWalletStore } from '../../src/stores';
 import { colors } from '../../src/theme/colors';
 import { spacing, layout } from '../../src/theme/spacing';
-import { Svg, Path, Circle, Rect } from 'react-native-svg';
-
-const badges = [
-  { label: 'Safety 94', variant: 'emerald' as const },
-  { label: 'Sin incidentes', variant: 'emerald' as const },
-  { label: '23 charlas', variant: 'copper' as const },
-  { label: '12 certificaciones', variant: 'cyan' as const },
-];
+import { Svg, Path, Circle } from 'react-native-svg';
 
 const settingsItems = [
-  { id: 'datos', label: 'Datos personales', icon: 'user' },
-  { id: 'familia', label: 'Mi familia', icon: 'heart' },
-  { id: 'seguridad', label: 'Seguridad de cuenta', icon: 'shield' },
-  { id: 'cvu', label: 'Mi CVU y Alias', icon: 'credit-card' },
-  { id: 'notificaciones', label: 'Notificaciones', icon: 'bell' },
-  { id: 'offline', label: 'Modo offline', icon: 'wifi-off' },
-  { id: 'idioma', label: 'Idioma', icon: 'globe', value: 'Espanol' },
-  { id: 'ayuda', label: 'Ayuda y soporte', icon: 'help' },
-  { id: 'terminos', label: 'Terminos y condiciones', icon: 'file' },
+  { id: 'datos', label: 'Datos personales' },
+  { id: 'familia', label: 'Mi familia', route: '/enviar-familia' },
+  { id: 'seguridad', label: 'Seguridad de cuenta' },
+  { id: 'biometria', label: 'Seguridad Biometrica', route: '/biometric-setup' },
+  { id: 'cvu', label: 'Mi CVU y Alias', route: '/(tabs)/plata' },
+  { id: 'notificaciones', label: 'Notificaciones', route: '/notificaciones' },
+  { id: 'offline', label: 'Modo offline' },
+  { id: 'idioma', label: 'Idioma', value: 'Espanol' },
+  { id: 'ayuda', label: 'Ayuda y soporte' },
+  { id: 'terminos', label: 'Terminos y condiciones' },
 ];
 
 export default function PerfilScreen() {
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
+  const safetyScore = useSafetyStore((s) => s.safetyScore);
+  const incidentCount = useSafetyStore((s) => s.incidentCount);
+  const consecutiveTalks = useSafetyStore((s) => s.consecutiveTalks);
+  const fetchSafety = useSafetyStore((s) => s.fetchSummary);
+  const certificates = useCareerStore((s) => s.certificates);
+  const fetchCareer = useCareerStore((s) => s.fetchSummary);
+  const creditScore = useWalletStore((s) => s.creditScore);
+  const isLoading = useWalletStore((s) => s.isLoading);
+  const fetchBalance = useWalletStore((s) => s.fetchBalance);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetchSafety();
+    fetchCareer();
+    fetchBalance();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([fetchSafety(), fetchCareer(), fetchBalance()]);
+    setRefreshing(false);
+  }, [fetchSafety, fetchCareer, fetchBalance]);
+
+  const activeCerts = certificates.filter((c) => c.status === 'vigente').length;
+  const initials = user ? `${user.nombre[0]}${user.apellido[0]}` : 'MW';
+
+  const badges = [
+    { label: `Safety ${safetyScore}`, variant: 'emerald' as const },
+    { label: incidentCount === 0 ? 'Sin incidentes' : `${incidentCount} incidentes`, variant: incidentCount === 0 ? 'emerald' as const : 'red' as const },
+    { label: `${consecutiveTalks} charlas`, variant: 'copper' as const },
+    { label: `${activeCerts} certificaciones`, variant: 'cyan' as const },
+  ];
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar sesion',
+      'Estas seguro que queres cerrar tu sesion?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Cerrar sesion',
+          style: 'destructive',
+          onPress: () => {
+            logout();
+            router.replace('/(auth)/login');
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.copper} colors={[colors.copper]} />}>
+        {isLoading && !refreshing ? <SkeletonCard /> : null}
         {/* Profile Header */}
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Text variant="h1" color={colors.copper}>CF</Text>
+              <Text variant="h1" color={colors.copper}>{initials}</Text>
             </View>
             <TouchableOpacity style={styles.cameraButton}>
               <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
@@ -42,13 +92,13 @@ export default function PerfilScreen() {
             </TouchableOpacity>
           </View>
           <Text variant="h2" color={colors.textPrimary} align="center">
-            Carlos Eduardo Francesia
+            {user ? `${user.nombre} ${user.apellido}` : 'MineralWallet'}
           </Text>
           <Text variant="bodySm" color={colors.textSecondary} align="center">
-            Operador Senior A — Minera Alumbrera
+            {user?.categoria ?? ''} — {user?.mina ?? ''}
           </Text>
           <Text variant="caption" color={colors.textMuted} align="center">
-            Legajo #4521 · Desde Marzo 2019 · 7 anos
+            Legajo #{user?.legajo ?? ''} · {user?.empresa ?? ''} · {user?.antiguedad ?? 0} anos
           </Text>
         </View>
 
@@ -64,23 +114,31 @@ export default function PerfilScreen() {
         {/* Quick Stats */}
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <Text variant="moneyMd" color={colors.textPrimary} align="center">7</Text>
+            <Text variant="moneyMd" color={colors.textPrimary} align="center">
+              {user?.antiguedad ?? 0}
+            </Text>
             <Text variant="caption" color={colors.textMuted} align="center">anos</Text>
           </View>
           <View style={[styles.statItem, styles.statBorder]}>
-            <Text variant="moneyMd" color={colors.textPrimary} align="center">$4.2M</Text>
-            <Text variant="caption" color={colors.textMuted} align="center">cobrado</Text>
+            <Text variant="moneyMd" color={colors.textPrimary} align="center">
+              Score {creditScore}
+            </Text>
+            <Text variant="caption" color={colors.textMuted} align="center">credito</Text>
           </View>
           <View style={styles.statItem}>
             <Text variant="moneyMd" color={colors.textPrimary} align="center">A+</Text>
-            <Text variant="caption" color={colors.textMuted} align="center">score</Text>
+            <Text variant="caption" color={colors.textMuted} align="center">rating</Text>
           </View>
         </View>
 
         {/* Settings List */}
         <View style={styles.settingsList}>
           {settingsItems.map((item) => (
-            <TouchableOpacity key={item.id} style={styles.settingsItem}>
+            <TouchableOpacity
+              key={item.id}
+              style={styles.settingsItem}
+              onPress={() => item.route && router.push(item.route as any)}
+            >
               <View style={styles.settingsLeft}>
                 <View style={styles.settingsIcon}>
                   <View style={styles.settingsDot} />
@@ -100,7 +158,7 @@ export default function PerfilScreen() {
         </View>
 
         {/* Logout */}
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text variant="body" color={colors.red} align="center">
             Cerrar sesion
           </Text>
@@ -108,7 +166,7 @@ export default function PerfilScreen() {
 
         {/* Version */}
         <Text variant="micro" color={colors.textMuted} align="center" style={styles.version}>
-          MineralWallet v2.0.0 — Build 4521
+          MineralWallet v2.0.0 — Build {user?.legajo ?? '0000'}
         </Text>
 
         <View style={styles.bottomSpacer} />

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
-import { Text, MoneyText, Label, Card, Badge, Button } from '../src/components/ui';
+import { Text, MoneyText, Label, Card, Badge, Button, ProgressBar } from '../src/components/ui';
+import { SliderInput } from '../src/components/forms';
+import { useWalletStore } from '../src/stores';
 import { colors } from '../src/theme/colors';
 import { spacing, layout } from '../src/theme/spacing';
 import { Svg, Path } from 'react-native-svg';
@@ -9,6 +11,8 @@ import { Svg, Path } from 'react-native-svg';
 const plazos = [3, 6, 9, 12, 18, 24];
 
 export default function MicrocreditosScreen() {
+  const creditScore = useWalletStore((s) => s.creditScore);
+  const activeLoans = useWalletStore((s) => s.activeLoans);
   const [monto, setMonto] = useState(150000);
   const [plazo, setPlazo] = useState(6);
   const [tab, setTab] = useState<'simular' | 'creditos'>('simular');
@@ -45,15 +49,14 @@ export default function MicrocreditosScreen() {
             {/* Amount */}
             <Card variant="financial" style={styles.amountCard}>
               <Text variant="labelSm" color={colors.textMuted}>Monto a solicitar</Text>
-              <View style={styles.amountRow}>
-                <MoneyText amount={monto.toLocaleString('es-AR')} variant="moneyLg" color={colors.textPrimary} />
-                <Text variant="caption" color={colors.textMuted}>Limite: $500.000</Text>
-              </View>
-              {/* Slider */}
-              <View style={styles.sliderTrack}>
-                <View style={[styles.sliderFill, { width: `${(monto / 500000) * 100}%` }]} />
-                <View style={[styles.sliderThumb, { left: `${(monto / 500000) * 100}%` }]} />
-              </View>
+              <SliderInput
+                value={monto}
+                min={10000}
+                max={500000}
+                step={10000}
+                onValueChange={setMonto}
+                accentColor={colors.copper}
+              />
             </Card>
 
             {/* Plazo */}
@@ -86,12 +89,10 @@ export default function MicrocreditosScreen() {
               <View style={styles.scoreSection}>
                 <Text variant="labelSm" color={colors.textMuted}>Mining Credit Score</Text>
                 <View style={styles.scoreRow}>
-                  <Text variant="moneyMd" color={colors.emerald}>92</Text>
+                  <Text variant="moneyMd" color={creditScore >= 80 ? colors.emerald : colors.amber}>{creditScore}</Text>
                   <Text variant="caption" color={colors.textMuted}> / 100</Text>
-                  <View style={styles.scoreGauge}>
-                    <View style={styles.scoreGaugeCircle} />
-                  </View>
                 </View>
+                <ProgressBar progress={creditScore} color={creditScore >= 80 ? colors.emerald : colors.amber} height={6} style={styles.scoreBar} />
               </View>
             </Card>
 
@@ -104,22 +105,31 @@ export default function MicrocreditosScreen() {
           <>
             {/* Active Loans */}
             <Text variant="label" color={colors.textMuted} style={styles.sectionLabel}>Prestamos Activos</Text>
-            <Card variant="financial" style={styles.loanCard}>
-              <View style={styles.loanHeader}>
-                <Text variant="h3" color={colors.textPrimary}>Refaccion de Maquinaria</Text>
-                <Badge label="Al dia" variant="emerald" />
-              </View>
-              <Text variant="labelSm" color={colors.textMuted}>ID: MW-9982-A</Text>
-              <View style={styles.loanProgress}>
-                <View style={styles.loanProgressRow}>
-                  <Text variant="caption" color={colors.textMuted}>Pagado: $120.000</Text>
-                  <Text variant="caption" color={colors.textMuted}>Total: $300.000</Text>
-                </View>
-                <View style={styles.loanBar}>
-                  <View style={[styles.loanBarFill, { width: '40%' }]} />
-                </View>
-              </View>
-            </Card>
+            {activeLoans.length === 0 ? (
+              <Card style={styles.loanCard}>
+                <Text variant="body" color={colors.textMuted} align="center">Sin prestamos activos</Text>
+              </Card>
+            ) : (
+              activeLoans.map((loan) => {
+                const paidPercent = loan.total > 0 ? Math.round((loan.paid / loan.total) * 100) : 0;
+                return (
+                  <Card key={loan.id} variant="financial" style={styles.loanCard}>
+                    <View style={styles.loanHeader}>
+                      <Text variant="h3" color={colors.textPrimary}>{loan.name}</Text>
+                      <Badge label="Al dia" variant="emerald" />
+                    </View>
+                    <Text variant="labelSm" color={colors.textMuted}>Cuota: ${loan.cuota.toLocaleString('es-AR')} · Prox: {loan.nextDate}</Text>
+                    <View style={styles.loanProgress}>
+                      <View style={styles.loanProgressRow}>
+                        <Text variant="caption" color={colors.textMuted}>Pagado: ${loan.paid.toLocaleString('es-AR')}</Text>
+                        <Text variant="caption" color={colors.textMuted}>Total: ${loan.total.toLocaleString('es-AR')}</Text>
+                      </View>
+                      <ProgressBar progress={paidPercent} color={colors.cyan} height={6} />
+                    </View>
+                  </Card>
+                );
+              })
+            )}
           </>
         )}
 
@@ -138,10 +148,6 @@ const styles = StyleSheet.create({
   tab: { flex: 1, paddingVertical: spacing.md, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: colors.copperMuted },
   tabActive: { borderBottomColor: colors.copper },
   amountCard: { marginBottom: spacing.xl },
-  amountRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: spacing.md },
-  sliderTrack: { height: 6, backgroundColor: colors.elevated, borderRadius: 3, position: 'relative', marginTop: spacing.md },
-  sliderFill: { height: '100%', backgroundColor: colors.copper, borderRadius: 3 },
-  sliderThumb: { position: 'absolute', top: -9, width: 24, height: 24, borderRadius: 4, backgroundColor: colors.copper, marginLeft: -12 },
   plazoLabel: { marginBottom: spacing.md },
   plazoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl },
   plazoPill: {
@@ -155,11 +161,7 @@ const styles = StyleSheet.create({
   resultRight: { alignItems: 'flex-end' },
   scoreSection: { marginTop: spacing.xl, paddingTop: spacing.lg, borderTopWidth: 1, borderTopColor: colors.copperMuted },
   scoreRow: { flexDirection: 'row', alignItems: 'baseline', marginTop: spacing.sm },
-  scoreGauge: { marginLeft: 'auto' },
-  scoreGaugeCircle: {
-    width: 48, height: 48, borderRadius: 24, borderWidth: 3, borderColor: colors.emerald,
-    borderTopColor: 'transparent',
-  },
+  scoreBar: { marginTop: spacing.sm },
   disclaimer: { marginTop: spacing.lg },
   sectionLabel: { marginBottom: spacing.md },
   loanCard: { marginBottom: spacing.lg },

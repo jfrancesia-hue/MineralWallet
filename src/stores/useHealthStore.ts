@@ -1,25 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mmkvStorage } from './middleware/mmkvPersist';
-
-export type FatigueLevel = 'optimo' | 'precaucion' | 'riesgo';
-
-export interface MedicalExam {
-  id: string;
-  type: string;
-  date: string;
-  location: string;
-  status: 'pendiente' | 'completado';
-  result?: string;
-  preparation: string[];
-}
-
-export interface HealthMetric {
-  heartRate: number;
-  steps: number;
-  deepSleep: number;
-  sleepQuality: string;
-}
+import { healthService } from '../services/health.service';
+import type { FatigueLevel, MedicalExam, HealthMetric } from '../types';
 
 interface HealthState {
   fatigueLevel: FatigueLevel;
@@ -36,67 +19,141 @@ interface HealthState {
   moodToday: number | null;
   daysAwayFromHome: number;
   daysUntilReturn: number;
+  isLoading: boolean;
+  error: string | null;
 
-  addWater: (ml?: number) => void;
-  setMood: (mood: number) => void;
-  updateMetrics: (metrics: Partial<HealthMetric>) => void;
+  fetchSummary: () => Promise<void>;
+  addWater: (ml?: number) => Promise<void>;
+  setMood: (mood: number) => Promise<void>;
+  updateMetrics: (metrics: Partial<HealthMetric>) => Promise<void>;
+  fetchExams: () => Promise<void>;
+  clearError: () => void;
 }
 
 export const useHealthStore = create<HealthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       fatigueLevel: 'optimo',
-      readinessScore: 94,
-      sleepHours: 7.75,
-      shiftLoad: 'Normal',
-      hydrationCurrent: 2500,
+      readinessScore: 0,
+      sleepHours: 0,
+      shiftLoad: '',
+      hydrationCurrent: 0,
       hydrationGoal: 4000,
-      hydrationPercent: 62,
-      temperature: 38,
-      medicalExams: [
-        {
-          id: 'exam-1',
-          type: 'Examen Periodico',
-          date: '2026-05-15',
-          location: 'Hospital Catamarca',
-          status: 'pendiente',
-          preparation: ['Ayuno de 12 horas', 'Documento de Identidad', 'Uniforme de Faena'],
-        },
-        {
-          id: 'exam-2',
-          type: 'Audiometria',
-          date: '2026-03-15',
-          location: 'Hospital Catamarca',
-          status: 'completado',
-          result: 'Normal',
-          preparation: [],
-        },
-      ],
-      aptoVigente: 'Noviembre 2026',
+      hydrationPercent: 0,
+      temperature: 0,
+      medicalExams: [],
+      aptoVigente: '',
       metrics: {
-        heartRate: 72,
-        steps: 8420,
-        deepSleep: 2.1,
-        sleepQuality: '07:45h',
+        heartRate: 0,
+        steps: 0,
+        deepSleep: 0,
+        sleepQuality: '',
       },
       moodToday: null,
-      daysAwayFromHome: 5,
-      daysUntilReturn: 2,
+      daysAwayFromHome: 0,
+      daysUntilReturn: 0,
+      isLoading: false,
+      error: null,
 
-      addWater: (ml = 250) =>
-        set((state) => {
-          const newCurrent = Math.min(state.hydrationCurrent + ml, state.hydrationGoal);
-          return {
-            hydrationCurrent: newCurrent,
-            hydrationPercent: Math.round((newCurrent / state.hydrationGoal) * 100),
-          };
-        }),
+      fetchSummary: async () => {
+        set({ isLoading: true, error: null });
+        const res = await healthService.getSummary();
+        if (res.success && res.data) {
+          const { hydrationCurrent, hydrationGoal } = res.data;
+          set({
+            fatigueLevel: res.data.fatigueLevel,
+            readinessScore: res.data.readinessScore,
+            sleepHours: res.data.sleepHours,
+            shiftLoad: res.data.shiftLoad,
+            hydrationCurrent,
+            hydrationGoal,
+            hydrationPercent: Math.round((hydrationCurrent / hydrationGoal) * 100),
+            temperature: res.data.temperature,
+            aptoVigente: res.data.aptoVigente,
+            metrics: res.data.metrics,
+            daysAwayFromHome: res.data.daysAwayFromHome,
+            daysUntilReturn: res.data.daysUntilReturn,
+            isLoading: false,
+          });
+        } else {
+          set({ error: res.error?.message ?? 'Error al cargar resumen de salud', isLoading: false });
+        }
+      },
 
-      setMood: (mood) => set({ moodToday: mood }),
+      addWater: async (ml = 250) => {
+        const { hydrationCurrent, hydrationGoal } = get();
+        const newCurrent = Math.min(hydrationCurrent + ml, hydrationGoal);
+        set({
+          hydrationCurrent: newCurrent,
+          hydrationPercent: Math.round((newCurrent / hydrationGoal) * 100),
+        });
+        const res = await healthService.logHydration(ml);
+        if (!res.success) {
+          set({
+            hydrationCurrent,
+            hydrationPercent: Math.round((hydrationCurrent / hydrationGoal) * 100),
+            error: res.error?.message ?? 'Error al registrar hidratacion',
+          });
+        }
+      },
 
-      updateMetrics: (metrics) =>
-        set((state) => ({ metrics: { ...state.metrics, ...metrics } })),
+      setMood: async (mood) => {
+        const prevMood = get().moodToday;
+        set({ moodToday: mood });
+        const res = await healthService.logMood(mood);
+        if (!res.success) {
+          set({
+            moodToday: prevMood,
+            error: res.error?.message ?? 'Error al registrar estado de animo',
+          });
+        }
+      },
+
+      updateMetrics: async (metrics) => {
+        const prevMetrics = get().metrics;
+        set((state) => ({ metrics: { ...state.metrics, ...metrics } }));
+        const res = await healthService.updateMetrics(metrics);
+        if (res.success && res.data) {
+          set({ metrics: res.data });
+        } else {
+          set({
+            metrics: prevMetrics,
+            error: res.error?.message ?? 'Error al actualizar metricas',
+          });
+        }
+      },
+
+      fetchExams: async () => {
+        set({ isLoading: true, error: null });
+        const res = await healthService.getMedicalExams();
+        if (res.success && res.data) {
+          set({ medicalExams: res.data, isLoading: false });
+        } else {
+          set({ error: res.error?.message ?? 'Error al cargar examenes medicos', isLoading: false });
+        }
+      },
+
+      clearError: () => set({ error: null }),
     }),
-    { name: 'mineral-health', storage: mmkvStorage }
+    {
+      name: 'mineral-health',
+      storage: mmkvStorage,
+      partialize: (state) => ({
+        fatigueLevel: state.fatigueLevel,
+        readinessScore: state.readinessScore,
+        sleepHours: state.sleepHours,
+        shiftLoad: state.shiftLoad,
+        hydrationCurrent: state.hydrationCurrent,
+        hydrationGoal: state.hydrationGoal,
+        hydrationPercent: state.hydrationPercent,
+        temperature: state.temperature,
+        medicalExams: state.medicalExams,
+        aptoVigente: state.aptoVigente,
+        metrics: state.metrics,
+        moodToday: state.moodToday,
+        daysAwayFromHome: state.daysAwayFromHome,
+        daysUntilReturn: state.daysUntilReturn,
+      }),
+    }
   )
 );

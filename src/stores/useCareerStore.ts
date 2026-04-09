@@ -1,36 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mmkvStorage } from './middleware/mmkvPersist';
-
-export interface Certificate {
-  id: string;
-  name: string;
-  issuedBy: string;
-  date: string;
-  expiresAt?: string;
-  status: 'vigente' | 'vencido' | 'en_curso';
-  progress?: number;
-  xpReward: number;
-}
-
-export interface Course {
-  id: string;
-  name: string;
-  hours: number;
-  xpReward: number;
-  difficulty: 'basico' | 'intermedio' | 'avanzado';
-  type: 'obligatorio' | 'recomendado' | 'voluntario';
-  validity: string;
-  progress: number;
-  completed: boolean;
-}
-
-export interface RankingEntry {
-  position: number;
-  name: string;
-  xp: number;
-  isCurrentUser: boolean;
-}
+import { careerService } from '../services/career.service';
+import type { Certificate, Course, RankingEntry } from '../types';
 
 interface CareerState {
   level: string;
@@ -43,54 +15,145 @@ interface CareerState {
   courses: Course[];
   ranking: RankingEntry[];
   positionChange: number;
-
-  completeModule: (courseId: string) => void;
-  addXP: (amount: number) => void;
+  isLoading: boolean;
+  error: string | null;
 }
 
-export const useCareerStore = create<CareerState>()(
-  persist(
-    (set) => ({
-      level: 'Operador Senior A',
-      nextLevel: 'Supervisor Junior',
-      xpCurrent: 2400,
-      xpRequired: 3000,
-      xpPercent: 80,
-      certificatesNeeded: 2,
-      certificates: [
-        { id: 'cert-1', name: 'Operacion de Dumper CAT 797', issuedBy: 'CERT-00521-2021', date: '2023-10-12', status: 'vigente', xpReward: 500 },
-        { id: 'cert-2', name: 'Induccion General de Mina', issuedBy: 'CERT-16291-2022', date: '2022-01-05', status: 'vigente', xpReward: 200 },
-        { id: 'cert-3', name: 'Trabajo en Altura', issuedBy: '', date: '', status: 'en_curso', progress: 60, xpReward: 400 },
-      ],
-      courses: [
-        { id: 'c-1', name: 'Seguridad en Excavacion Profunda', hours: 8, xpReward: 400, difficulty: 'avanzado', type: 'obligatorio', validity: '2 anos', progress: 0, completed: false },
-        { id: 'c-2', name: 'Mantenimiento Predictivo 4.0', hours: 12, xpReward: 300, difficulty: 'intermedio', type: 'obligatorio', validity: '1 ano', progress: 0, completed: false },
-        { id: 'c-3', name: 'Protocolo de Primeros Auxilios', hours: 4, xpReward: 150, difficulty: 'basico', type: 'obligatorio', validity: '3 anos', progress: 0, completed: false },
-      ],
-      ranking: [
-        { position: 5, name: 'Carlos R.', xp: 4100, isCurrentUser: false },
-        { position: 6, name: 'Elena M.', xp: 3800, isCurrentUser: false },
-        { position: 7, name: 'TU', xp: 2400, isCurrentUser: true },
-        { position: 8, name: 'Javier S.', xp: 2200, isCurrentUser: false },
-      ],
-      positionChange: 3,
+interface CareerActions {
+  fetchSummary: () => Promise<void>;
+  startCourse: (courseId: string) => Promise<void>;
+  completeModule: (courseId: string) => Promise<void>;
+  addXP: (amount: number) => void;
+  clearError: () => void;
+}
 
-      completeModule: (courseId) =>
+type CareerStore = CareerState & CareerActions;
+
+const initialState: CareerState = {
+  level: '',
+  nextLevel: '',
+  xpCurrent: 0,
+  xpRequired: 0,
+  xpPercent: 0,
+  certificatesNeeded: 0,
+  certificates: [],
+  courses: [],
+  ranking: [],
+  positionChange: 0,
+  isLoading: false,
+  error: null,
+};
+
+export const useCareerStore = create<CareerStore>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
+
+      fetchSummary: async () => {
+        set({ isLoading: true, error: null });
+        const [summaryRes, certsRes, coursesRes, rankingRes] = await Promise.all([
+          careerService.getSummary(),
+          careerService.getCertificates(),
+          careerService.getCourses(),
+          careerService.getRanking(),
+        ]);
+
+        if (summaryRes.success && summaryRes.data) {
+          const { level, nextLevel, xpCurrent, xpRequired, certificatesNeeded, positionChange } = summaryRes.data;
+          set({
+            level,
+            nextLevel,
+            xpCurrent,
+            xpRequired,
+            xpPercent: xpRequired > 0 ? Math.round((xpCurrent / xpRequired) * 100) : 0,
+            certificatesNeeded,
+            positionChange,
+          });
+        } else {
+          set({ isLoading: false, error: summaryRes.error?.message ?? 'Error al obtener resumen de carrera' });
+          return;
+        }
+
+        if (certsRes.success && certsRes.data) {
+          set({ certificates: certsRes.data });
+        }
+
+        if (coursesRes.success && coursesRes.data) {
+          set({ courses: coursesRes.data });
+        }
+
+        if (rankingRes.success && rankingRes.data) {
+          set({ ranking: rankingRes.data });
+        }
+
+        set({ isLoading: false });
+      },
+
+      startCourse: async (courseId) => {
+        set({ isLoading: true, error: null });
+        const response = await careerService.startCourse(courseId);
+        if (response.success && response.data) {
+          set((state) => ({
+            courses: state.courses.map((c) => c.id === courseId ? response.data! : c),
+            isLoading: false,
+          }));
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al iniciar curso' });
+        }
+      },
+
+      completeModule: async (courseId) => {
+        // Optimistic update: increment progress by 20%
         set((state) => ({
           courses: state.courses.map((c) =>
-            c.id === courseId ? { ...c, progress: Math.min(c.progress + 20, 100), completed: c.progress + 20 >= 100 } : c
+            c.id === courseId
+              ? { ...c, progress: Math.min(c.progress + 20, 100), completed: c.progress + 20 >= 100 }
+              : c
           ),
-        })),
+          error: null,
+        }));
+
+        const prevCourses = get().courses;
+        const response = await careerService.completeModule(courseId);
+        if (response.success && response.data) {
+          set((state) => ({
+            courses: state.courses.map((c) => c.id === courseId ? response.data! : c),
+          }));
+        } else {
+          // Roll back optimistic update
+          set({
+            courses: prevCourses,
+            error: response.error?.message ?? 'Error al completar modulo',
+          });
+        }
+      },
 
       addXP: (amount) =>
         set((state) => {
           const newXP = state.xpCurrent + amount;
           return {
             xpCurrent: newXP,
-            xpPercent: Math.round((newXP / state.xpRequired) * 100),
+            xpPercent: state.xpRequired > 0 ? Math.round((newXP / state.xpRequired) * 100) : 0,
           };
         }),
+
+      clearError: () => set({ error: null }),
     }),
-    { name: 'mineral-career', storage: mmkvStorage }
+    {
+      name: 'mineral-career',
+      storage: mmkvStorage,
+      partialize: (state) => ({
+        level: state.level,
+        nextLevel: state.nextLevel,
+        xpCurrent: state.xpCurrent,
+        xpRequired: state.xpRequired,
+        xpPercent: state.xpPercent,
+        certificatesNeeded: state.certificatesNeeded,
+        certificates: state.certificates,
+        courses: state.courses,
+        ranking: state.ranking,
+        positionChange: state.positionChange,
+      }),
+    }
   )
 );

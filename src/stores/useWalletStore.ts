@@ -1,26 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mmkvStorage } from './middleware/mmkvPersist';
-
-interface Transaction {
-  id: string;
-  title: string;
-  description?: string;
-  amount: number;
-  date: string;
-  type: 'income' | 'expense' | 'transfer';
-  category: string;
-}
-
-interface FamilyContact {
-  id: string;
-  name: string;
-  relationship: string;
-  lastSentAmount: number;
-  lastSentDate: string;
-  totalSentYear: number;
-  method: string;
-}
+import { walletService } from '../services/wallet.service';
+import type { Transaction, FamilyContact, ActiveLoan } from '../types';
 
 interface WalletState {
   balance: number;
@@ -34,41 +16,193 @@ interface WalletState {
   alias: string;
   familyContacts: FamilyContact[];
   creditScore: number;
-  activeLoans: { id: string; name: string; total: number; paid: number; cuota: number; nextDate: string }[];
+  activeLoans: ActiveLoan[];
+  isLoading: boolean;
+  error: string | null;
 }
 
-export const useWalletStore = create<WalletState>()(
+interface WalletActions {
+  fetchBalance: () => Promise<void>;
+  fetchTransactions: () => Promise<void>;
+  fetchFamilyContacts: () => Promise<void>;
+  fetchLoans: () => Promise<void>;
+  sendTransfer: (recipientId: string, amount: number, title?: string, description?: string) => Promise<void>;
+  requestAdelanto: (amount: number) => Promise<void>;
+  convertUsdt: (arsAmount: number, direction: 'ars_to_usdt' | 'usdt_to_ars') => Promise<void>;
+  sendToFamily: (contactId: string, amount: number) => Promise<void>;
+  clearError: () => void;
+}
+
+type WalletStore = WalletState & WalletActions;
+
+const initialState: WalletState = {
+  balance: 0,
+  savings: 0,
+  usdtBalance: 0,
+  usdtRate: 0,
+  adelantoDisponible: 0,
+  adelantoUsado: 0,
+  transactions: [],
+  cvu: '',
+  alias: '',
+  familyContacts: [],
+  creditScore: 0,
+  activeLoans: [],
+  isLoading: false,
+  error: null,
+};
+
+export const useWalletStore = create<WalletStore>()(
   persist(
-    () => ({
-      balance: 847250,
-      savings: 125000,
-      usdtBalance: 340,
-      usdtRate: 1000,
-      adelantoDisponible: 200000,
-      adelantoUsado: 0,
-      transactions: [
-        { id: 'tx-1', title: 'Deposito de Nomina', amount: 420000, date: '2026-04-05', type: 'income', category: 'salary' },
-        { id: 'tx-2', title: 'Comisaria Industrial', amount: -12500, date: '2026-04-04', type: 'expense', category: 'services' },
-        { id: 'tx-3', title: 'Transferencia a Maria', description: 'Esposa', amount: -50000, date: '2026-04-03', type: 'transfer', category: 'family' },
-        { id: 'tx-4', title: 'Adelanto de sueldo', amount: 150000, date: '2026-04-01', type: 'income', category: 'advance' },
-        { id: 'tx-5', title: 'Farmacia Catamarca', description: 'Beneficio 20%', amount: -4500, date: '2026-03-30', type: 'expense', category: 'pharmacy' },
-        { id: 'tx-6', title: 'Bono asistencia perfecta', description: 'Empresa', amount: 25000, date: '2026-03-28', type: 'income', category: 'bonus' },
-      ] as Transaction[],
-      cvu: '0000003100012345678901',
-      alias: 'MINA.ORO.WALLE',
-      familyContacts: [
-        { id: 'f-1', name: 'Maria', relationship: 'Esposa', lastSentAmount: 80000, lastSentDate: '2026-04-06', totalSentYear: 480000, method: 'CBU Banco Nacion' },
-        { id: 'f-2', name: 'Mama', relationship: 'Madre', lastSentAmount: 30000, lastSentDate: '2026-03-25', totalSentYear: 180000, method: 'Billetera virtual' },
-        { id: 'f-3', name: 'Hermano', relationship: 'Hermano', lastSentAmount: 15000, lastSentDate: '2026-03-12', totalSentYear: 90000, method: 'CBU' },
-      ],
-      creditScore: 92,
-      activeLoans: [
-        { id: 'loan-1', name: 'Refaccion de Maquinaria', total: 300000, paid: 120000, cuota: 45200, nextDate: '2026-05-01' },
-      ],
+    (set, get) => ({
+      ...initialState,
+
+      fetchBalance: async () => {
+        set({ isLoading: true, error: null });
+        const response = await walletService.getBalance();
+        if (response.success && response.data) {
+          set({
+            balance: response.data.balance,
+            savings: response.data.savings,
+            usdtBalance: response.data.usdtBalance,
+            usdtRate: response.data.usdtRate,
+            adelantoDisponible: response.data.adelantoDisponible,
+            adelantoUsado: response.data.adelantoUsado,
+            cvu: response.data.cvu,
+            alias: response.data.alias,
+            creditScore: response.data.creditScore,
+            isLoading: false,
+          });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al obtener saldo' });
+        }
+      },
+
+      fetchTransactions: async () => {
+        set({ isLoading: true, error: null });
+        const response = await walletService.getTransactions();
+        if (response.success && response.data) {
+          set({ transactions: response.data, isLoading: false });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al obtener movimientos' });
+        }
+      },
+
+      fetchFamilyContacts: async () => {
+        set({ isLoading: true, error: null });
+        const response = await walletService.getFamilyContacts();
+        if (response.success && response.data) {
+          set({ familyContacts: response.data, isLoading: false });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al obtener contactos familiares' });
+        }
+      },
+
+      fetchLoans: async () => {
+        set({ isLoading: true, error: null });
+        const response = await walletService.getActiveLoans();
+        if (response.success && response.data) {
+          set({ activeLoans: response.data, isLoading: false });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al obtener préstamos' });
+        }
+      },
+
+      sendTransfer: async (recipientId, amount, title, description) => {
+        const prev = { balance: get().balance, transactions: get().transactions };
+        const optimisticTx: Transaction = {
+          id: `tx-optimistic-${Date.now()}`,
+          title: title ?? 'Transferencia',
+          description,
+          amount: -amount,
+          date: new Date().toISOString().split('T')[0],
+          type: 'transfer',
+          category: 'transfer',
+        };
+        set((state) => ({
+          balance: state.balance - amount,
+          transactions: [optimisticTx, ...state.transactions],
+          error: null,
+        }));
+        const response = await walletService.transfer({ toContactId: recipientId, amount, description });
+        if (response.success && response.data) {
+          set((state) => ({
+            transactions: state.transactions.map((tx) =>
+              tx.id === optimisticTx.id ? response.data! : tx
+            ),
+          }));
+        } else {
+          set({
+            balance: prev.balance,
+            transactions: prev.transactions,
+            error: response.error?.message ?? 'Error al realizar transferencia',
+          });
+        }
+      },
+
+      requestAdelanto: async (amount) => {
+        set({ isLoading: true, error: null });
+        const response = await walletService.requestAdelanto({ amount });
+        if (response.success && response.data) {
+          set((state) => ({
+            balance: state.balance + amount,
+            adelantoUsado: state.adelantoUsado + amount,
+            adelantoDisponible: state.adelantoDisponible - amount,
+            transactions: [response.data!, ...state.transactions],
+            isLoading: false,
+          }));
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al solicitar adelanto' });
+        }
+      },
+
+      convertUsdt: async (arsAmount, direction) => {
+        set({ isLoading: true, error: null });
+        const response = await walletService.convertUsdt({ amountArs: arsAmount, direction });
+        if (response.success && response.data) {
+          set({
+            usdtBalance: response.data.newUsdtBalance,
+            balance: response.data.newArsBalance,
+            isLoading: false,
+          });
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al convertir USDT' });
+        }
+      },
+
+      sendToFamily: async (contactId, amount) => {
+        set({ isLoading: true, error: null });
+        const response = await walletService.sendToFamily(contactId, amount);
+        if (response.success && response.data) {
+          set((state) => ({
+            balance: state.balance - amount,
+            transactions: [response.data!, ...state.transactions],
+            isLoading: false,
+          }));
+        } else {
+          set({ isLoading: false, error: response.error?.message ?? 'Error al enviar a familiar' });
+        }
+      },
+
+      clearError: () => set({ error: null }),
     }),
     {
       name: 'mineral-wallet',
       storage: mmkvStorage,
+      partialize: (state) => ({
+        balance: state.balance,
+        savings: state.savings,
+        usdtBalance: state.usdtBalance,
+        usdtRate: state.usdtRate,
+        adelantoDisponible: state.adelantoDisponible,
+        adelantoUsado: state.adelantoUsado,
+        transactions: state.transactions,
+        cvu: state.cvu,
+        alias: state.alias,
+        familyContacts: state.familyContacts,
+        creditScore: state.creditScore,
+        activeLoans: state.activeLoans,
+      }),
     }
   )
 );

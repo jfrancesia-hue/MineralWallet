@@ -1,61 +1,91 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
+  RefreshControl,
 } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text, MoneyText, Label, Card, Badge, StatusDot, ActionCircle } from '../../src/components/ui';
+import { Text, MoneyText, Label, Card, Badge, StatusDot, ActionCircle, SkeletonCard } from '../../src/components/ui';
+import { TransactionCard } from '../../src/components/cards';
+import { useAuthStore, useWalletStore, useWorkStore, useNotificationsStore } from '../../src/stores';
+import { useWallet } from '../../src/hooks';
 import { colors } from '../../src/theme/colors';
 import { spacing, layout } from '../../src/theme/spacing';
-import { Svg, Path, Circle, Rect } from 'react-native-svg';
+import { Svg, Path, Rect } from 'react-native-svg';
 
 const quickActions = [
-  { id: 'recibo', label: 'Recibo', color: colors.copper },
-  { id: 'turnos', label: 'Turnos', color: colors.cyan },
-  { id: 'sos', label: 'SOS', color: colors.red },
-  { id: 'salud', label: 'Salud', color: colors.emerald },
-  { id: 'cursos', label: 'Cursos', color: colors.purple },
-  { id: 'beneficios', label: 'Beneficios', color: colors.amber },
-];
-
-const recentTransactions = [
-  { id: '1', title: 'Deposito de Nomina', date: '22 May, 2024', amount: '+$420.000', positive: true },
-  { id: '2', title: 'Comisaria Industrial', date: '21 May, 2024', amount: '-$12.500', positive: false },
-  { id: '3', title: 'Transferencia Familia', date: '20 May, 2024', amount: '-$50.000', positive: false },
+  { id: 'recibo', label: 'Recibo', color: colors.copper, route: '/recibo' },
+  { id: 'turnos', label: 'Turnos', color: colors.cyan, route: '/turnos' },
+  { id: 'sos', label: 'SOS', color: colors.red, route: '/(tabs)/sos' },
+  { id: 'salud', label: 'Salud', color: colors.emerald, route: '/(tabs)/salud' },
+  { id: 'cursos', label: 'Cursos', color: colors.purple, route: '/carrera' },
+  { id: 'beneficios', label: 'Beneficios', color: colors.amber, route: '/beneficios' },
 ];
 
 export default function HomeScreen() {
+  const user = useAuthStore((s) => s.user);
+  const balance = useWalletStore((s) => s.balance);
+  const savings = useWalletStore((s) => s.savings);
+  const usdtBalance = useWalletStore((s) => s.usdtBalance);
+  const adelantoDisponible = useWalletStore((s) => s.adelantoDisponible);
+  const transactions = useWalletStore((s) => s.transactions);
+  const isLoading = useWalletStore((s) => s.isLoading);
+  const currentShift = useWorkStore((s) => s.currentShift);
+  const isCheckedIn = useWorkStore((s) => s.isCheckedIn);
+  const fetchWorkSummary = useWorkStore((s) => s.fetchSummary);
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const fetchNotifications = useNotificationsStore((s) => s.fetchAll);
+  const { fetchAll } = useWallet();
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetchAll();
+    fetchWorkSummary();
+    fetchNotifications();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([fetchAll(), fetchWorkSummary(), fetchNotifications()]);
+    setRefreshing(false);
+  }, [fetchAll, fetchWorkSummary, fetchNotifications]);
+
+  const recentTx = transactions.slice(0, 3);
+  const initials = user ? `${user.nombre[0]}${user.apellido[0]}` : 'MW';
+
   return (
     <View style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.copper} colors={[colors.copper]} />}
       >
+        {isLoading && !refreshing ? <SkeletonCard /> : null}
+
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <View style={styles.avatar}>
-              <Text variant="bodySm" color={colors.copper}>CF</Text>
-            </View>
-            <View>
-              <Badge label="Minera Alumbrera" variant="copper" />
-            </View>
-          </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.bellButton}>
-              <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
-                <Path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke={colors.textPrimary} strokeWidth={1.5} strokeLinecap="round" />
-                <Path d="M13.73 21a2 2 0 01-3.46 0" stroke={colors.textPrimary} strokeWidth={1.5} strokeLinecap="round" />
-              </Svg>
-              <View style={styles.bellBadge}>
-                <Text variant="micro" color={colors.textPrimary}>3</Text>
-              </View>
+            <TouchableOpacity style={styles.avatar} onPress={() => router.push('/(tabs)/perfil')}>
+              <Text variant="bodySm" color={colors.copper}>{initials}</Text>
             </TouchableOpacity>
+            <View>
+              <Badge label={user?.mina ?? 'MineralWallet'} variant="copper" />
+            </View>
           </View>
+          <TouchableOpacity style={styles.bellButton} onPress={() => router.push('/notificaciones')}>
+            <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
+              <Path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke={colors.textPrimary} strokeWidth={1.5} strokeLinecap="round" />
+              <Path d="M13.73 21a2 2 0 01-3.46 0" stroke={colors.textPrimary} strokeWidth={1.5} strokeLinecap="round" />
+            </Svg>
+            {unreadCount > 0 && (
+              <View style={styles.bellBadge}>
+                <Text variant="micro" color={colors.textPrimary}>{unreadCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Brand */}
@@ -64,24 +94,26 @@ export default function HomeScreen() {
         </Text>
 
         {/* Shift Status Strip */}
-        <Card variant="status" accentColor={colors.emerald} style={styles.shiftStrip}>
-          <View style={styles.shiftContent}>
-            <View style={styles.shiftLeft}>
-              <StatusDot status="online" size={8} />
-              <Text variant="buttonSm" color={colors.emerald} style={styles.shiftStatus}>
-                EN TURNO
+        {currentShift && (
+          <Card
+            variant="status"
+            accentColor={isCheckedIn ? colors.emerald : colors.textMuted}
+            style={styles.shiftStrip}
+            onPress={() => router.push('/turnos')}
+          >
+            <View style={styles.shiftContent}>
+              <View style={styles.shiftLeft}>
+                <StatusDot status={isCheckedIn ? 'online' : 'rest'} size={8} />
+                <Text variant="buttonSm" color={isCheckedIn ? colors.emerald : colors.textMuted} style={styles.shiftStatus}>
+                  {isCheckedIn ? 'EN TURNO' : 'FUERA DE TURNO'}
+                </Text>
+              </View>
+              <Text variant="caption" color={colors.textSecondary}>
+                Turno {currentShift.type === 'manana' ? 'Manana' : currentShift.type === 'tarde' ? 'Tarde' : 'Noche'} — {currentShift.startTime} a {currentShift.endTime} — Dia {currentShift.dayOfRotation} de {currentShift.totalDays}
               </Text>
             </View>
-            <Text variant="caption" color={colors.textSecondary}>
-              Turno Manana — 06:00 a 14:00 — Dia 5 de 7
-            </Text>
-            <View style={styles.shiftRight}>
-              <Text variant="label" color={colors.textMuted}>Faltan</Text>
-              <Text variant="moneyMd" color={colors.cyan}>3h</Text>
-              <Text variant="moneySm" color={colors.cyan}>24m</Text>
-            </View>
-          </View>
-        </Card>
+          </Card>
+        )}
 
         {/* Balance Hero Card */}
         <LinearGradient
@@ -94,12 +126,12 @@ export default function HomeScreen() {
           <Label color={colors.copper} style={styles.balanceLabel}>
             Saldo disponible
           </Label>
-          <MoneyText amount="847.250" variant="balance" color={colors.textPrimary} />
+          <MoneyText amount={balance} variant="balance" color={colors.textPrimary} />
 
           {/* Pills */}
           <View style={styles.pillsRow}>
             <Badge label="Proximo cobro: 5 dias" variant="cyan" />
-            <Badge label="Adelanto: $200.000" variant="copper" />
+            <Badge label={`Adelanto: $${adelantoDisponible.toLocaleString('es-AR')}`} variant="copper" />
           </View>
 
           {/* Quick Actions */}
@@ -108,55 +140,73 @@ export default function HomeScreen() {
               icon={<Svg width={20} height={20} viewBox="0 0 24 24" fill="none"><Path d="M12 19V5M5 12l7-7 7 7" stroke={colors.emerald} strokeWidth={2} strokeLinecap="round" /></Svg>}
               label="Enviar"
               color={colors.emerald}
-              onPress={() => {}}
+              onPress={() => router.push('/enviar')}
             />
             <ActionCircle
               icon={<Svg width={20} height={20} viewBox="0 0 24 24" fill="none"><Path d="M12 5v14M19 12l-7 7-7-7" stroke={colors.cyan} strokeWidth={2} strokeLinecap="round" /></Svg>}
               label="Cobrar"
               color={colors.cyan}
-              onPress={() => {}}
+              onPress={() => router.push('/pagar-qr')}
             />
             <ActionCircle
               icon={<Svg width={20} height={20} viewBox="0 0 24 24" fill="none"><Path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke={colors.copper} strokeWidth={2} /></Svg>}
               label="Familia"
               color={colors.copper}
-              onPress={() => {}}
+              onPress={() => router.push('/enviar-familia')}
             />
             <ActionCircle
               icon={<Svg width={20} height={20} viewBox="0 0 24 24" fill="none"><Rect x={3} y={3} width={7} height={7} rx={1} stroke={colors.textMuted} strokeWidth={1.5} /><Rect x={14} y={3} width={7} height={7} rx={1} stroke={colors.textMuted} strokeWidth={1.5} /><Rect x={3} y={14} width={7} height={7} rx={1} stroke={colors.textMuted} strokeWidth={1.5} /><Rect x={14} y={14} width={7} height={7} rx={1} stroke={colors.textMuted} strokeWidth={1.5} /></Svg>}
               label="Mas"
               color={colors.textMuted}
-              onPress={() => {}}
+              onPress={() => router.push('/(tabs)/plata')}
             />
           </View>
         </LinearGradient>
 
         {/* Savings & Shift Row */}
         <View style={styles.twoCardRow}>
-          <Card style={styles.halfCard}>
+          <Card style={styles.halfCard} onPress={() => router.push('/resguardo-usdt')}>
             <Label color={colors.copper}>Ahorro</Label>
-            <MoneyText amount="125.000" variant="moneySm" color={colors.textPrimary} style={styles.cardMoney} />
-            <Text variant="micro" color={colors.textMuted}>340 USDT Resguardo</Text>
+            <MoneyText amount={savings} variant="moneySm" color={colors.textPrimary} style={styles.cardMoney} />
+            <Text variant="micro" color={colors.textMuted}>{usdtBalance} USDT Resguardo</Text>
           </Card>
-          <Card variant="status" accentColor={colors.cyan} style={styles.halfCard}>
-            <Text variant="buttonSm" color={colors.textPrimary}>Hoy — Manana</Text>
-            <Text variant="caption" color={colors.textSecondary}>Sector Norte - Nivel -3</Text>
-            <View style={styles.progressContainer}>
-              <Text variant="micro" color={colors.textMuted}>Progreso 60%</Text>
-              <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: '60%' }]} />
+          <Card
+            variant="status"
+            accentColor={colors.cyan}
+            style={styles.halfCard}
+            onPress={() => router.push('/turnos')}
+          >
+            <Text variant="buttonSm" color={colors.textPrimary}>
+              Hoy — {currentShift?.type === 'manana' ? 'Manana' : currentShift?.type === 'tarde' ? 'Tarde' : 'Noche'}
+            </Text>
+            <Text variant="caption" color={colors.textSecondary}>
+              {currentShift?.sector} - {currentShift?.level}
+            </Text>
+            {currentShift && (
+              <View style={styles.progressContainer}>
+                <Text variant="micro" color={colors.textMuted}>
+                  Progreso {Math.round((currentShift.dayOfRotation / currentShift.totalDays) * 100)}%
+                </Text>
+                <View style={styles.progressBar}>
+                  <View style={[styles.progressFill, { width: `${(currentShift.dayOfRotation / currentShift.totalDays) * 100}%` }]} />
+                </View>
               </View>
-            </View>
+            )}
           </Card>
         </View>
 
         {/* Quick Access Grid */}
         <View style={styles.quickGrid}>
           {quickActions.map((action) => (
-            <TouchableOpacity key={action.id} style={styles.quickGridItem}>
+            <TouchableOpacity
+              key={action.id}
+              style={styles.quickGridItem}
+              onPress={() => router.push(action.route as any)}
+            >
               <View style={[styles.quickGridCircle, { backgroundColor: `${action.color}15`, borderColor: `${action.color}30` }]}>
-                {action.id === 'sos' && <StatusDot status="critical" size={12} pulse />}
-                {action.id !== 'sos' && (
+                {action.id === 'sos' ? (
+                  <StatusDot status="critical" size={12} pulse />
+                ) : (
                   <View style={[styles.quickGridDot, { backgroundColor: action.color }]} />
                 )}
               </View>
@@ -170,26 +220,13 @@ export default function HomeScreen() {
         {/* Recent Activity */}
         <View style={styles.sectionHeader}>
           <Text variant="label" color={colors.textMuted}>Actividad reciente</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/plata')}>
             <Text variant="caption" color={colors.copper}>Ver todo</Text>
           </TouchableOpacity>
         </View>
 
-        {recentTransactions.map((tx) => (
-          <Card key={tx.id} style={styles.transactionCard}>
-            <View style={styles.transactionRow}>
-              <View style={styles.transactionLeft}>
-                <Text variant="bodySm" color={colors.textPrimary}>{tx.title}</Text>
-                <Text variant="caption" color={colors.textMuted}>{tx.date}</Text>
-              </View>
-              <MoneyText
-                amount={tx.amount.replace(/[+$-]/g, '')}
-                variant="moneySm"
-                prefix={tx.positive ? '+$' : '-$'}
-                color={tx.positive ? colors.emerald : colors.textPrimary}
-              />
-            </View>
-          </Card>
+        {recentTx.map((tx) => (
+          <TransactionCard key={tx.id} transaction={tx} />
         ))}
 
         {/* Bottom spacer for tab bar */}
@@ -229,11 +266,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
   bellButton: {
     position: 'relative',
     width: layout.touchTarget,
@@ -272,11 +304,6 @@ const styles = StyleSheet.create({
   },
   shiftStatus: {
     letterSpacing: 2,
-  },
-  shiftRight: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 2,
   },
   balanceCard: {
     borderRadius: layout.borderRadius.md,
@@ -364,18 +391,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.md,
-  },
-  transactionCard: {
-    marginBottom: spacing.sm,
-  },
-  transactionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  transactionLeft: {
-    flex: 1,
-    gap: 2,
   },
   bottomSpacer: {
     height: layout.tabBarHeight + spacing['2xl'],

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,10 +6,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
+import { haptics } from '../../src/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { Text, Button, Input } from '../../src/components/ui';
+import { useAuthStore } from '../../src/stores';
 import { colors } from '../../src/theme/colors';
 import { spacing, layout } from '../../src/theme/spacing';
 import { Svg, Path, Rect, Circle } from 'react-native-svg';
@@ -18,13 +22,61 @@ export default function LoginScreen() {
   const [legajo, setLegajo] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const login = useAuthStore((s) => s.login);
+  const loginBiometric = useAuthStore((s) => s.loginBiometric);
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const error = useAuthStore((s) => s.error);
+  const clearError = useAuthStore((s) => s.clearError);
 
-  const handleLogin = () => {
-    router.replace('/(tabs)');
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Error', error, [{ text: 'OK', onPress: clearError }]);
+    }
+  }, [error]);
+
+  const handleLogin = async () => {
+    if (!legajo.trim() || !password.trim()) {
+      Alert.alert('Datos requeridos', 'Ingresa tu legajo y contrasena.');
+      return;
+    }
+    await login(legajo.trim(), password);
   };
 
-  const handleBiometric = () => {
-    router.replace('/(tabs)');
+  const handleBiometric = async () => {
+    const compatible = await LocalAuthentication.hasHardwareAsync();
+    if (!compatible) {
+      Alert.alert('No disponible', 'Tu dispositivo no soporta autenticacion biometrica.');
+      return;
+    }
+
+    const enrolled = await LocalAuthentication.isEnrolledAsync();
+    if (!enrolled) {
+      Alert.alert('Sin configurar', 'No hay huellas o Face ID registrados en este dispositivo.');
+      return;
+    }
+
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: 'Ingresa con tu huella o rostro',
+      cancelLabel: 'Cancelar',
+      fallbackLabel: 'Usar contrasena',
+      disableDeviceFallback: false,
+    });
+
+    if (result.success) {
+      haptics.success();
+      await loginBiometric();
+    }
+  };
+
+  const handleEmergency = () => {
+    router.push('/(tabs)/sos');
   };
 
   return (
@@ -108,6 +160,8 @@ export default function LoginScreen() {
             onPress={handleLogin}
             variant="primary"
             size="lg"
+            loading={isLoading}
+            disabled={!legajo.trim() || !password.trim()}
           />
         </View>
 
@@ -129,7 +183,7 @@ export default function LoginScreen() {
         </View>
 
         {/* Emergency without login */}
-        <TouchableOpacity style={styles.emergencyLink}>
+        <TouchableOpacity style={styles.emergencyLink} onPress={handleEmergency}>
           <Text variant="bodySm" color={colors.red} align="center">
             * Emergencia sin login
           </Text>
