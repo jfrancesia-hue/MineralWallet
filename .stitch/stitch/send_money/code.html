@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&amp;family=Be+Vietnam+Pro:wght@100;300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Be+Vietnam+Pro', sans-serif;
+            background-color: #0f131f;
+        }
+        .copper-gradient {
+            background: linear-gradient(135deg, #ffb784 0%, #d07c39 100%);
+        }
+        .glass-panel {
+            background: rgba(27, 31, 44, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#dfe2f3",
+                        "primary-fixed": "#ffdcc6",
+                        "inverse-on-surface": "#2c303d",
+                        "surface": "#0f131f",
+                        "tertiary-container": "#00a575",
+                        "secondary-container": "#00e3fd",
+                        "inverse-surface": "#dfe2f3",
+                        "background": "#0f131f",
+                        "on-tertiary-fixed": "#002114",
+                        "on-primary-fixed": "#301400",
+                        "tertiary-fixed": "#63fcc0",
+                        "on-surface-variant": "#dac2b4",
+                        "tertiary": "#3fdfa5",
+                        "surface-container-highest": "#313442",
+                        "tertiary-fixed-dim": "#3fdfa5",
+                        "on-tertiary-fixed-variant": "#005138",
+                        "outline-variant": "#544339",
+                        "outline": "#a28d80",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1b1f2c",
+                        "surface-tint": "#ffb784",
+                        "secondary-fixed-dim": "#00daf3",
+                        "on-tertiary-container": "#003120",
+                        "surface-container-high": "#262a37",
+                        "on-primary": "#4f2500",
+                        "surface-variant": "#313442",
+                        "secondary": "#bdf4ff",
+                        "surface-dim": "#0f131f",
+                        "surface-bright": "#353946",
+                        "surface-container-low": "#171b28",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "primary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#00616d",
+                        "on-secondary-fixed": "#001f24",
+                        "on-primary-fixed-variant": "#713700",
+                        "on-tertiary": "#003825",
+                        "on-surface": "#dfe2f3",
+                        "primary-container": "#d07c39",
+                        "error": "#ffb4ab",
+                        "primary": "#ffb784",
+                        "inverse-primary": "#934b07",
+                        "secondary-fixed": "#9cf0ff",
+                        "on-secondary": "#00363d",
+                        "on-primary-container": "#451f00",
+                        "surface-container-lowest": "#0a0e1a",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface selection:bg-primary/30 selection:text-primary">
+<!-- Top Navigation Anchor -->
+<nav class="flex justify-between items-center px-6 h-16 w-full fixed top-0 z-50 bg-slate-950/80 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-orange-400">arrow_back</span>
+<h1 class="font-['Space_Grotesk'] tracking-tighter uppercase font-bold text-lg text-orange-400">Enviar</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a miner wearing a specialized high-tech mining helmet with glowing orange sensors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnbdmnqQhMu8UEgSRA16nmTjM-0DYE-UmSSTZzluk7442gjkRrMegpgRqwpjOOe6Eafwsh7dMZMu1jecrzxqq7mDF1kH6fVATSMnTa3zt9_eDyAIc-8yQcOygE6MWHNnUvc0MqeBUp_-ThXC4Lesn9sDb8RH9UdNe_m8xZcP_4CiuuEfqluvFE5penZ4VdhcYvNixcWhXNI2_4SOWQIO3_fDfSSLLZU1kwUHoHeaULhL7K3rldEJCtQ8URXTkWnVbEA7iLYVHqru4"/>
+</div>
+</nav>
+<main class="pt-20 pb-32 px-6 max-w-lg mx-auto">
+<!-- Search Bar Glassmorphism -->
+<section class="mb-8">
+<div class="glass-panel rounded-xl p-1 flex items-center shadow-2xl">
+<div class="flex items-center px-4">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline/60 py-4 font-body" placeholder="Buscar por nombre, CVU o Alias..." type="text"/>
+</div>
+</section>
+<!-- Recipient Categories -->
+<section class="mb-10 space-y-8">
+<!-- Familia -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<h2 class="font-headline font-bold text-sm tracking-widest uppercase text-secondary">Familia</h2>
+<span class="text-[10px] text-outline font-bold tracking-tighter cursor-pointer hover:text-primary transition-colors">VER TODOS</span>
+</div>
+<div class="flex gap-4 overflow-x-auto hide-scrollbar py-2">
+<div class="flex-shrink-0 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-16 h-16 rounded-full p-0.5 border-2 border-primary/40 group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover rounded-full" data-alt="Close up portrait of a senior man smiling with warm industrial lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDfTiRJJjLedTMpgaKmxPdRLvGvk9wQW_OP1iQn3B0CtF26AwPtwo8fX7c2RKbzEMEzSaiiQiII3heqzMWEZFBIBm9YhAfnkDAcvdkk0hRlJjmtIqyVLM8Cjo1K8wFYSyVIB421DqXe2YcHOQLfuL02QSfQKP_HfefUGKiztwKmiGtO-1w9QVHY9-6GHS2-BBKCpjlM0tQj-Ctf0HmdRpqAnuGgDqdf09uUPhaqqC83rkxBWpyiMqqjSr2nxjcRzrLGSIP42CRVos"/>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant font-body">Padre</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-16 h-16 rounded-full p-0.5 border-2 border-transparent bg-surface-container-highest group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover rounded-full" data-alt="Portrait of a young woman engineer in a workshop environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDTXnxbLGReLL3in-HG4ix82GVLNZ3A1R8RuuQ7ExHRmER7LlPXXX6fl1Tf-BC5yoVd1nfAJo9nsFs6DTEzE2lywl5JkvnEpJB2jDIs6PJGj9EW9BZCv-tWaUXhVUzb9Knt5WylZ2fUpeqJKmGfs2sFkQ2NxEHDcX-cnsqSqEnp6kywGarHTi59rnU4wviMcedMzw_NX3jQHtJ6JoTdtozQB4iftn39ZDMoYqoeC4fyi-nO6VLvNusuqg-H81bukzYzTm8r5CC7EE"/>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant font-body">Sofía</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-16 h-16 rounded-full p-0.5 border-2 border-transparent bg-surface-container-highest group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover rounded-full" data-alt="Portrait of a professional man with a short beard in a dim office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhy-uNairdkkJuOQ8BWyRo15jU7fNM_Wk67J9oXl7agKJfXmDZE1R0V1zy6gqzNK2CE2i3dnIyAJq-hxsHC9qXHlWNJkmdZ9QI-vfketUOBauqE6f09qX-bYEctU4-d5vCM7ACki0AWzOJVRgNLf4fJKQPSga72l8Jqe82n8B9GHo3JLtXtBjhMLG59rujTGXl3CxC2foKBqBUbsbveUeuAYQt0lcga1YjMycz6T23WahCRjg-R0SciLJBxZCtUCLM5uT-TKEMsrw"/>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant font-body">Hermano</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-16 h-16 rounded-full p-0.5 border-2 border-transparent bg-surface-container-highest group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover rounded-full" data-alt="Close up face of a woman with thoughtful expression in cool moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDHD1aNNwF4j6QuIqr6a0E34zGLagj1xgu6eBZN3vRXOORwEpf-YcQpg9pN3DP8PvaGAcGg6-qFIpcrARBM8B2YXMTzdCmFdFMFiHId_FPbhkLWMttUqSyK_bYCRK0LKiqOdgrwo38iAVAfxoC9UBLaaT7muJNC6RE1eKKmDudq_0NK_PTfMb1EclgdBCaTTXIcKDOBHHeBor7yEvWegrnLt2xsWfq_rYxcRTPWowCmHQxCyir0oWa-L1CS2hD1qdrCoXaMp68Kq4"/>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant font-body">Elena</span>
+</div>
+</div>
+</div>
+<!-- Frecuentes & Compañeros -->
+<div class="grid grid-cols-1 gap-6">
+<!-- Frecuentes -->
+<div class="space-y-4">
+<h2 class="font-headline font-bold text-sm tracking-widest uppercase text-tertiary">Frecuentes</h2>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar py-1">
+<div class="flex items-center gap-3 bg-surface-container-low p-3 pr-6 rounded-full border border-white/5 hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm">electric_bolt</span>
+</div>
+<div>
+<p class="text-xs font-bold font-headline">Edenor S.A.</p>
+<p class="text-[10px] text-outline">Servicio</p>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-low p-3 pr-6 rounded-full border border-white/5 hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold text-xs">MA</div>
+<div>
+<p class="text-xs font-bold font-headline">Marco Aurelio</p>
+<p class="text-[10px] text-outline">Personal</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Compañeros -->
+<div class="space-y-4">
+<h2 class="font-headline font-bold text-sm tracking-widest uppercase text-outline">Compañeros de Obra</h2>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar py-1">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center group cursor-pointer hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-outline group-hover:text-primary">add</span>
+</div>
+<div class="w-12 h-12 rounded-lg overflow-hidden border border-white/5 cursor-pointer">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Portrait of a rugged man in professional work clothes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBdAOw7sLsZQmgNhIBc9OsXGqEtBzmkXjvLNC-qcyIOsJZEt2PPR9WeaJdb-nExQacP-CUQsPlxj-WlVj5GNie6UegfE1o3t1LfYkL0pYzJhtI3nhsdZVmh38QaZeX_BMnU4DuiRGSjEGUuZYMhmmQGrQ6X7vrrxSXCj7Qg9jL0XfaywAmx1wf2jyReN0GrCwlTwTQE8DXaX6zmQIdAEUNGktqKTL5UR8BNKZyPOll2W1vl2SoFP9gxioj5snUiqUML07BEjlgYqI"/>
+</div>
+<div class="w-12 h-12 rounded-lg overflow-hidden border border-white/5 cursor-pointer">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Professional portrait of an African American man in soft studio light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO3fPqaoGnfCW6W0iogfYqQfZtNpzJ4rps_45cE2qNUKQqYUPBotBFMlwhab2mlAut6SHAiDmJrGOuoUEZv-sb1hyNl7zz3m4ked-1MvLv1QsR9vqYVvsVqlRHq_3LGpByAcmQKa-qzmEQNxHRdQCAFiCT1obMMseWprOmuAXuxfZQTbl3-YGIGKjiIjwfodVrYZPmw5pSZrj9_6S4Sx-8fyvH6FRQSJgM-zMb9Nls8vDRyzWJZnfAzPcCmrFDUWjoRB_IQmD0Fys"/>
+</div>
+<div class="w-12 h-12 rounded-lg overflow-hidden border border-white/5 cursor-pointer">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="Close up of a man with intense gaze in professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNZYUy6xy0tfypXuL33Qxz0aWF-UFmJ3lDnvwpJ4o6vFQFAt5YNZw2XtdA6fTuOEDU6SHBsXwNCIAXXAPZxLSTdBElRuBlleTjulnigzXvkmXpTmuUGe1-TOgQ5QbTUOYn1BvaPYm2gP1Ocrupbj3y9Q8Mk4DNo1kmxnidjq_6gsVWplkN00nZTGI5BXFK4opyXYZxld3hWlRGMAb62-jp49xzaIOK7oE1j8x-7O3TLbbbrFlrjlF677fKu6aK8oj3JMF0_4R0oYM"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Amount Entry View -->
+<section class="glass-panel rounded-3xl p-8 mb-8 text-center relative overflow-hidden">
+<!-- Background topgraphic texture hint -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBORhdlFeJG2RhrVInimxBkJANbhmHKk9V4GVwqL1a-nJfY9pvmFqZDUgZAZkpO4J4KFPuHV1OaF4QcEaW8OYc7cPysw4dn2cqD7uNvFzKJm0FM6fxyui1mBqjjxturMP1smyACOZGlPaeiB7jFWwccDAlVBbpZye1kZ9qwVZ5-NCeW9_3JsXJhWhw3vcTa_Z1unvfjhuXuzIyyPUMVC2BaIs31KRAnCYtdU8uw0-I6qBqFyng7silIT4qA6fipM9tTdc_UZ1-rf3I');"></div>
+<p class="text-[10px] font-headline font-black uppercase tracking-[0.2em] text-outline mb-4">Monto a Transferir</p>
+<div class="mb-2">
+<span class="text-secondary font-mono text-5xl md:text-7xl font-bold tracking-tighter">$</span>
+<span class="text-on-surface font-mono text-5xl md:text-7xl font-bold tracking-tighter">0</span>
+</div>
+<div class="flex items-center justify-center gap-2 bg-surface-container-low inline-flex px-4 py-2 rounded-full border border-white/5">
+<span class="text-[10px] font-bold text-outline uppercase tracking-wider">Saldo Disponible:</span>
+<span class="text-[10px] font-mono font-bold text-tertiary">$847.250</span>
+</div>
+<!-- Quick Amount Pills -->
+<div class="mt-8 flex flex-wrap justify-center gap-3">
+<button class="px-5 py-2 rounded-full bg-surface-container-high border border-white/5 text-xs font-bold hover:bg-primary/20 hover:border-primary/40 transition-all font-headline">$10k</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high border border-white/5 text-xs font-bold hover:bg-primary/20 hover:border-primary/40 transition-all font-headline">$25k</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high border border-white/5 text-xs font-bold hover:bg-primary/20 hover:border-primary/40 transition-all font-headline">$50k</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high border border-white/5 text-xs font-bold hover:bg-primary/20 hover:border-primary/40 transition-all font-headline">MAX</button>
+</div>
+</section>
+<!-- Keypad -->
+<section class="grid grid-cols-3 gap-4 mb-12">
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">1</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">2</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">3</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">4</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">5</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">6</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">7</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">8</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">9</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">.</button>
+<button class="h-16 flex items-center justify-center text-2xl font-headline font-bold text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">0</button>
+<button class="h-16 flex items-center justify-center text-on-surface hover:bg-surface-container-high rounded-xl transition-colors">
+<span class="material-symbols-outlined">backspace</span>
+</button>
+</section>
+<!-- CTA Action -->
+<button class="copper-gradient w-full h-16 rounded-xl flex items-center justify-center gap-3 shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+<span class="text-on-primary font-headline font-black uppercase tracking-widest">Continuar</span>
+<span class="material-symbols-outlined text-on-primary">arrow_forward</span>
+</button>
+</main>
+<!-- Success / Confirm Modal Simulation Overlay (Hidden by Default usually, but shown for design showcase) -->
+<!-- This section represents the Confirmation view mentioned in the prompt -->
+<div class="fixed inset-0 z-[100] bg-surface/95 backdrop-blur-md flex flex-col justify-end pointer-events-none opacity-0 translate-y-full transition-all duration-500">
+<!-- In a real app this would trigger on 'Continuar' -->
+<div class="bg-surface-container-low w-full rounded-t-[2.5rem] p-8 pb-12 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] border-t border-white/5">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full mx-auto mb-8"></div>
+<h3 class="font-headline font-bold text-xl text-center mb-8">Confirmar Envío</h3>
+<div class="space-y-6 mb-10">
+<div class="flex items-center gap-4 bg-surface-container-high p-4 rounded-2xl">
+<img class="w-14 h-14 rounded-full border-2 border-primary" data-alt="Portrait of a smiling senior man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC73QwMNBnHM29bHOzbrMxqbYNvhjtUVTf3Y6wX3XpXQTcQe7n4i2hZg-WeyIdti0el-iFzwJ7mmvoT_ne51gW8-cp9L6jGn85ZLSJuBxOKZLFLwE7ZPv0PJW_qGc7E1GlLaaqh1XMvtPTvWKsGUGWNrVwJnbujfJ3JRibZPW42n70XrM4iVSnVUSNhcx6S4h0isG28qNssa8no4N9KotSo_Ska7dAP5SKr9K0D_LKuNdcuktUEhVrfFSy9CJdZgBa5o3GLcMcpqY4"/>
+<div>
+<p class="font-headline font-bold text-on-surface">Roberto Gomez (Padre)</p>
+<p class="text-xs text-outline font-mono">CVU: 0000003100094857362514</p>
+</div>
+</div>
+<div class="flex justify-between px-2">
+<span class="text-outline text-sm">Monto Neto</span>
+<span class="font-mono font-bold text-on-surface">$25.000,00</span>
+</div>
+<div class="flex justify-between px-2">
+<span class="text-outline text-sm">Comisión (0%)</span>
+<span class="font-mono font-bold text-tertiary">$0,00</span>
+</div>
+<div class="pt-4 border-t border-white/5 flex justify-between px-2">
+<span class="font-headline font-bold text-lg">Total a Enviar</span>
+<span class="font-mono font-bold text-2xl text-primary">$25.000,00</span>
+</div>
+</div>
+<div class="space-y-4">
+<button class="w-full h-16 rounded-xl border-2 border-secondary/30 flex items-center justify-center gap-3 group active:bg-secondary/10 transition-all">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="text-secondary font-headline font-bold uppercase tracking-widest">Confirmar con Biometría</span>
+</button>
+<button class="copper-gradient w-full h-16 rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
+<span class="text-on-primary font-headline font-black uppercase tracking-widest">Enviar Ahora</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 bg-slate-950/90 backdrop-blur-2xl h-24 shadow-[0_-10px_30px_rgba(200,117,51,0.06)]">
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Inicio</span>
+</div>
+<div class="flex flex-col items-center justify-center text-orange-400 font-black">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Plata</span>
+</div>
+<div class="flex flex-col items-center justify-center -mt-10">
+<div class="w-16 h-16 rounded-full copper-gradient flex items-center justify-center shadow-lg shadow-primary/40 border-4 border-surface active:scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined text-on-primary text-3xl" data-icon="shield">shield</span>
+</div>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1 text-slate-500">SOS</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined" data-icon="monitor_heart">monitor_heart</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Salud</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Perfil</span>
+</div>
+</nav>
+</body></html>

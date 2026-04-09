@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mi Recibo - Mineral Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#dfe2f3",
+                    "primary-fixed": "#ffdcc6",
+                    "inverse-on-surface": "#2c303d",
+                    "surface": "#0f131f",
+                    "tertiary-container": "#00a575",
+                    "secondary-container": "#00e3fd",
+                    "inverse-surface": "#dfe2f3",
+                    "background": "#0f131f",
+                    "on-tertiary-fixed": "#002114",
+                    "on-primary-fixed": "#301400",
+                    "tertiary-fixed": "#63fcc0",
+                    "on-surface-variant": "#dac2b4",
+                    "tertiary": "#3fdfa5",
+                    "surface-container-highest": "#313442",
+                    "tertiary-fixed-dim": "#3fdfa5",
+                    "on-tertiary-fixed-variant": "#005138",
+                    "outline-variant": "#544339",
+                    "outline": "#a28d80",
+                    "on-error-container": "#ffdad6",
+                    "surface-container": "#1b1f2c",
+                    "surface-tint": "#ffb784",
+                    "secondary-fixed-dim": "#00daf3",
+                    "on-tertiary-container": "#003120",
+                    "surface-container-high": "#262a37",
+                    "on-primary": "#4f2500",
+                    "surface-variant": "#313442",
+                    "secondary": "#bdf4ff",
+                    "surface-dim": "#0f131f",
+                    "surface-bright": "#353946",
+                    "surface-container-low": "#171b28",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#004f58",
+                    "primary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#00616d",
+                    "on-secondary-fixed": "#001f24",
+                    "on-primary-fixed-variant": "#713700",
+                    "on-tertiary": "#003825",
+                    "on-surface": "#dfe2f3",
+                    "primary-container": "#d07c39",
+                    "error": "#ffb4ab",
+                    "primary": "#ffb784",
+                    "inverse-primary": "#934b07",
+                    "secondary-fixed": "#9cf0ff",
+                    "on-secondary": "#00363d",
+                    "on-primary-container": "#451f00",
+                    "surface-container-lowest": "#0a0e1a",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Space Grotesk"],
+                    "mono": ["JetBrains Mono"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .copper-gradient {
+            background: linear-gradient(135deg, #ffb784 0%, #d07c39 100%);
+        }
+        .topographic-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10Q50 10 50 50T90 90' stroke='%23ffb784' stroke-width='0.5' fill='none' opacity='0.05'/%3E%3Cpath d='M100 10Q150 50 100 100' stroke='%23ffb784' stroke-width='0.5' fill='none' opacity='0.05'/%3E%3C/svg%3E");
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 min-h-screen pb-32 topographic-bg">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-6 h-16 w-full fixed top-0 z-50 bg-slate-950/80 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant/20 overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" data-alt="Portrait of a professional miner with a modern orange safety helmet and focused expression, cinematic industrial lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsCUDhrnwo7KGsNZRMw0YrF32nazLMPrh-IA8JTclSoWIQoBPY0ADQrfM6-CSVkIBfGijS1oiK75sM_pEz6_adrI0N2xY8V-T_V_Zevqo42JKkp_Qt1_izTEmhTwuL8uO96df9ffUMgXlBTWjCxZyAcrwj2DZNadExmRxw3CaEtNRRlGGUDU606anWMIAzCls-sHNyrp0tl0Vr8I7iIMR7I1Lvx_p79HevR6R-Zi1YiEquL2L_Nmn92CLETrIaeZSrWGH41jEAQwU"/>
+</div>
+<h1 class="font-['Space_Grotesk'] tracking-tighter uppercase font-bold text-lg text-orange-400">MINERAL WALLET</h1>
+</div>
+<button class="material-symbols-outlined text-orange-400 p-2 hover:bg-slate-800/50 transition-colors rounded-full">notifications_active</button>
+</header>
+<main class="pt-24 px-6 max-w-4xl mx-auto space-y-8">
+<!-- Header Title Section -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">description</span>
+<div>
+<h2 class="font-headline font-bold text-3xl tracking-tight uppercase">Mi Recibo</h2>
+<p class="text-on-surface-variant font-label text-sm tracking-widest opacity-70">CONTROL DE HABERES</p>
+</div>
+</div>
+</div>
+<!-- Month Selector -->
+<div class="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+<button class="px-6 py-3 rounded bg-surface-container text-on-surface-variant font-bold text-xs uppercase tracking-widest whitespace-nowrap hover:bg-surface-container-high transition-all">Enero</button>
+<button class="px-6 py-3 rounded bg-surface-container text-on-surface-variant font-bold text-xs uppercase tracking-widest whitespace-nowrap hover:bg-surface-container-high transition-all">Febrero</button>
+<button class="px-6 py-3 rounded bg-surface-container text-on-surface-variant font-bold text-xs uppercase tracking-widest whitespace-nowrap hover:bg-surface-container-high transition-all">Marzo</button>
+<button class="px-6 py-3 rounded copper-gradient text-on-primary font-bold text-xs uppercase tracking-widest whitespace-nowrap shadow-lg shadow-primary/10">Abril</button>
+<button class="px-6 py-3 rounded bg-surface-container text-on-surface-variant font-bold text-xs uppercase tracking-widest whitespace-nowrap hover:bg-surface-container-high transition-all opacity-50">Mayo</button>
+</div>
+<!-- Main Pay Stub Card -->
+<div class="bg-surface-container-low rounded-xl p-8 border-l-4 border-primary shadow-2xl relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-5 select-none pointer-events-none">
+<span class="material-symbols-outlined text-[120px]">factory</span>
+</div>
+<div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-white/10 rounded flex items-center justify-center border border-outline-variant/30">
+<img alt="Logo" class="w-8 h-8 opacity-80" data-alt="Minimalist abstract industrial logo representing mining tools, copper and dark gray colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC1u7Qf60ZbLYuZmiCWZsiGqH7j1GoqdC5yK_esSPHRgYA3vMXAH2ziJXdzMak4aleLI4t3-xssZog4IrBN7_-eggEOZ-JKzvosrQhG9Hd-gJNS5GrrQaCz63p6MCX9beacowN5XFJUqZ2teLlG9PP9AL5YoaNY65k3UO3A3mb9GWKrXLy2n2GoOeb6LBspGiDgK4_Hj24BOFoZz62hOoXZHsHjASFgoihTm-lKcbz-CwmeAix0DVv-ZGE-cK0sKzBG2cbUogEXHE"/>
+</div>
+<div>
+<p class="font-headline font-extrabold text-xl leading-none">OBSIDIAN MINING CO.</p>
+<p class="text-on-surface-variant text-xs font-mono">CUIT: 30-71234567-9</p>
+</div>
+</div>
+<div class="pt-4">
+<p class="text-on-surface-variant text-xs uppercase tracking-widest">Empleado</p>
+<p class="font-headline font-bold text-2xl">Carlos Rodriguez</p>
+<p class="text-secondary font-mono text-sm">Legajo: #MN-20948 • Cat: Oficial Especializado</p>
+</div>
+</div>
+<div class="text-left md:text-right">
+<p class="text-on-surface-variant text-xs uppercase tracking-widest">Período de Liquidación</p>
+<p class="font-headline font-black text-4xl text-primary">Abril 2026</p>
+<p class="text-on-surface-variant text-sm mt-1">Fecha de pago: 05/05/2026</p>
+</div>
+</div>
+<!-- Detailed Breakdown Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-outline-variant/20 mt-10 overflow-hidden">
+<!-- Earnings (Haberes) -->
+<div class="bg-surface-container-low p-6 space-y-4">
+<h3 class="font-headline font-bold text-lg text-tertiary-fixed flex items-center gap-2">
+<span class="material-symbols-outlined">trending_up</span> Haberes
+                    </h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant text-sm group-hover:text-on-surface transition-colors">Sueldo Básico</span>
+<span class="font-mono text-on-surface">$520.000,00</span>
+</div>
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant text-sm group-hover:text-on-surface transition-colors">Adicional Zona</span>
+<span class="font-mono text-on-surface">$104.000,00</span>
+</div>
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant text-sm group-hover:text-on-surface transition-colors">Horas Extras (15h)</span>
+<span class="font-mono text-on-surface">$45.600,00</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="font-headline font-bold uppercase text-xs tracking-tighter">Total Haberes</span>
+<span class="font-mono font-bold text-xl text-tertiary">$669.600,00</span>
+</div>
+</div>
+<!-- Deductions (Descuentos) -->
+<div class="bg-surface-container-low p-6 space-y-4">
+<h3 class="font-headline font-bold text-lg text-error flex items-center gap-2">
+<span class="material-symbols-outlined">trending_down</span> Descuentos
+                    </h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant text-sm group-hover:text-on-surface transition-colors">Aportes Jubilatorios</span>
+<span class="font-mono text-on-surface">$59.215,00</span>
+</div>
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant text-sm group-hover:text-on-surface transition-colors">Adelanto Quincena</span>
+<span class="font-mono text-on-surface">$150.000,00</span>
+</div>
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant text-sm group-hover:text-on-surface transition-colors">Microcrédito Interno</span>
+<span class="font-mono text-on-surface">$45.000,00</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="font-headline font-bold uppercase text-xs tracking-tighter">Total Descuentos</span>
+<span class="font-mono font-bold text-xl text-error">$254.215,00</span>
+</div>
+</div>
+</div>
+<!-- Final Net Amount -->
+<div class="mt-px bg-surface-container-high p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<div>
+<h4 class="font-headline font-black text-on-surface-variant text-sm tracking-[0.2em] uppercase mb-2">Neto a Cobrar</h4>
+<div class="flex items-baseline gap-3">
+<span class="text-primary font-mono font-black text-6xl tracking-tighter">$415.385</span>
+<span class="text-primary-fixed-dim font-mono text-xl">,00</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center gap-4">
+<div class="h-12 w-1 bg-tertiary-container rounded-full"></div>
+<div>
+<p class="text-xs text-on-surface-variant font-bold uppercase">vs. Mes Anterior</p>
+<p class="font-headline font-bold text-lg text-tertiary">+12.4% <span class="text-xs font-normal text-on-surface-variant opacity-60 ml-1">(+$45.8k)</span></p>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="flex-1 h-14 copper-gradient text-on-primary font-bold uppercase tracking-widest flex items-center justify-center gap-3 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">download</span>
+                Descargar PDF
+            </button>
+<button class="flex-1 h-14 border-2 border-outline-variant text-on-surface font-bold uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-surface-container transition-colors active:scale-95 transition-transform">
+<span class="material-symbols-outlined">share</span>
+                Compartir
+            </button>
+</div>
+<!-- Previous History Context -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+<div class="bg-surface-container-low p-4 space-y-2 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+<p class="text-[10px] font-black uppercase text-on-surface-variant tracking-widest">Marzo 2026</p>
+<div class="flex justify-between items-center">
+<span class="font-mono text-xl">$369.585</span>
+<span class="material-symbols-outlined text-tertiary text-sm">trending_up</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 space-y-2 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+<p class="text-[10px] font-black uppercase text-on-surface-variant tracking-widest">Febrero 2026</p>
+<div class="flex justify-between items-center">
+<span class="font-mono text-xl">$358.120</span>
+<span class="material-symbols-outlined text-tertiary text-sm">trending_up</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 space-y-2 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+<p class="text-[10px] font-black uppercase text-on-surface-variant tracking-widest">Enero 2026</p>
+<div class="flex justify-between items-center">
+<span class="font-mono text-xl">$342.900</span>
+<span class="material-symbols-outlined text-tertiary text-sm">trending_up</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 bg-slate-950/90 backdrop-blur-2xl h-24 shadow-[0_-10px_30px_rgba(200,117,51,0.06)]">
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 cursor-pointer">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Inicio</span>
+</div>
+<div class="flex flex-col items-center justify-center text-orange-400 font-black cursor-pointer scale-110">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Plata</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 cursor-pointer">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">SOS</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 cursor-pointer">
+<span class="material-symbols-outlined">monitor_heart</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Salud</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 cursor-pointer">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Perfil</span>
+</div>
+</nav>
+</body></html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Be_Vietnam_Pro:wght@100;300;400;500;700;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#dfe2f3",
+                        "primary-fixed": "#ffdcc6",
+                        "inverse-on-surface": "#2c303d",
+                        "surface": "#0f131f",
+                        "tertiary-container": "#00a575",
+                        "secondary-container": "#00e3fd",
+                        "inverse-surface": "#dfe2f3",
+                        "background": "#0f131f",
+                        "on-tertiary-fixed": "#002114",
+                        "on-primary-fixed": "#301400",
+                        "tertiary-fixed": "#63fcc0",
+                        "on-surface-variant": "#dac2b4",
+                        "tertiary": "#3fdfa5",
+                        "surface-container-highest": "#313442",
+                        "tertiary-fixed-dim": "#3fdfa5",
+                        "on-tertiary-fixed-variant": "#005138",
+                        "outline-variant": "#544339",
+                        "outline": "#a28d80",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1b1f2c",
+                        "surface-tint": "#ffb784",
+                        "secondary-fixed-dim": "#00daf3",
+                        "on-tertiary-container": "#003120",
+                        "surface-container-high": "#262a37",
+                        "on-primary": "#4f2500",
+                        "surface-variant": "#313442",
+                        "secondary": "#bdf4ff",
+                        "surface-dim": "#0f131f",
+                        "surface-bright": "#353946",
+                        "surface-container-low": "#171b28",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "primary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#00616d",
+                        "on-secondary-fixed": "#001f24",
+                        "on-primary-fixed-variant": "#713700",
+                        "on-tertiary": "#003825",
+                        "on-surface": "#dfe2f3",
+                        "primary-container": "#d07c39",
+                        "error": "#ffb4ab",
+                        "primary": "#ffb784",
+                        "inverse-primary": "#934b07",
+                        "secondary-fixed": "#9cf0ff",
+                        "on-secondary": "#00363d",
+                        "on-primary-container": "#451f00",
+                        "surface-container-lowest": "#0a0e1a",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #060A14;
+            background-image: radial-gradient(#1b1f2c 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+        }
+        .copper-gradient {
+            background: linear-gradient(135deg, #ffb784 0%, #d07c39 100%);
+        }
+        .topographic-overlay {
+            mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjAuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body text-on-surface min-h-screen flex flex-col items-center justify-center p-6 selection:bg-primary selection:text-on-primary">
+<div class="w-full max-w-md space-y-12 relative">
+<div class="flex flex-col items-center space-y-8">
+<div class="w-16 h-16 flex items-center justify-center border-2 border-primary/30 rounded-lg relative overflow-hidden group">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+<span class="font-headline font-black text-4xl text-primary tracking-tighter z-10">MW</span>
+</div>
+<div class="text-center space-y-2">
+<h1 class="font-headline text-3xl font-bold tracking-tight text-on-background">Bienvenido, minero</h1>
+<p class="text-on-surface-variant font-light tracking-wide">Ingresá con tu legajo o DNI</p>
+</div>
+</div>
+<form class="space-y-6">
+<div class="space-y-4">
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-lg" data-icon="badge">badge</span>
+</div>
+<input class="w-full h-[52px] pl-12 pr-4 bg-surface-container-low border-b-2 border-primary/20 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:bg-surface-container transition-all font-body" placeholder="Legajo o DNI" type="text"/>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-lg" data-icon="lock">lock</span>
+</div>
+<input class="w-full h-[52px] pl-12 pr-12 bg-surface-container-low border-b-2 border-primary/20 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:bg-surface-container transition-all font-body" placeholder="Contraseña" type="password"/>
+<button class="absolute inset-y-0 right-4 flex items-center text-outline hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<button class="w-full h-[56px] copper-gradient text-on-primary font-headline font-bold text-lg tracking-widest uppercase rounded-DEFAULT shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all active:scale-[0.98]" type="submit">
+                Ingresar
+            </button>
+</form>
+<div class="flex flex-col items-center space-y-8">
+<div class="flex items-center space-x-4 w-full">
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+<span class="text-[10px] uppercase tracking-[0.2em] font-bold text-outline">Identidad Biométrica</span>
+<div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+</div>
+<button class="w-24 h-24 rounded-xl border-2 border-primary/20 flex items-center justify-center bg-surface-container-lowest hover:bg-surface-container-low hover:border-primary/50 transition-all group">
+<span class="material-symbols-outlined text-5xl text-primary opacity-80 group-hover:opacity-100 transition-opacity" data-icon="fingerprint">fingerprint</span>
+</button>
+<div class="pt-4 flex flex-col items-center space-y-6">
+<a class="text-error font-headline font-bold text-sm tracking-widest uppercase hover:underline flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-base" data-icon="emergency">emergency</span>
+                    Emergencia sin login
+                </a>
+</div>
+</div>
+<div class="absolute -bottom-24 left-0 right-0 flex justify-center opacity-40">
+<div class="flex items-center space-x-2 px-4 py-2 bg-surface-container rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-xs text-tertiary" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label text-[10px] uppercase tracking-tighter text-outline">Protocolo de encriptación Obsidian v4.2</span>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] topographic-overlay"></div>
+<div class="fixed inset-0 pointer-events-none">
+<div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,183,132,0.05)_0%,transparent_50%)]"></div>
+</div>
+</body></html>

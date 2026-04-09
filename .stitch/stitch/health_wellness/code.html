@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#dfe2f3",
+                    "primary-fixed": "#ffdcc6",
+                    "inverse-on-surface": "#2c303d",
+                    "surface": "#0f131f",
+                    "tertiary-container": "#00a575",
+                    "secondary-container": "#00e3fd",
+                    "inverse-surface": "#dfe2f3",
+                    "background": "#0f131f",
+                    "on-tertiary-fixed": "#002114",
+                    "on-primary-fixed": "#301400",
+                    "tertiary-fixed": "#63fcc0",
+                    "on-surface-variant": "#dac2b4",
+                    "tertiary": "#3fdfa5",
+                    "surface-container-highest": "#313442",
+                    "tertiary-fixed-dim": "#3fdfa5",
+                    "on-tertiary-fixed-variant": "#005138",
+                    "outline-variant": "#544339",
+                    "outline": "#a28d80",
+                    "on-error-container": "#ffdad6",
+                    "surface-container": "#1b1f2c",
+                    "surface-tint": "#ffb784",
+                    "secondary-fixed-dim": "#00daf3",
+                    "on-tertiary-container": "#003120",
+                    "surface-container-high": "#262a37",
+                    "on-primary": "#4f2500",
+                    "surface-variant": "#313442",
+                    "secondary": "#bdf4ff",
+                    "surface-dim": "#0f131f",
+                    "surface-bright": "#353946",
+                    "surface-container-low": "#171b28",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#004f58",
+                    "primary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#00616d",
+                    "on-secondary-fixed": "#001f24",
+                    "on-primary-fixed-variant": "#713700",
+                    "on-tertiary": "#003825",
+                    "on-surface": "#dfe2f3",
+                    "primary-container": "#d07c39",
+                    "error": "#ffb4ab",
+                    "primary": "#ffb784",
+                    "inverse-primary": "#934b07",
+                    "secondary-fixed": "#9cf0ff",
+                    "on-secondary": "#00363d",
+                    "on-primary-container": "#451f00",
+                    "surface-container-lowest": "#0a0e1a",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Space Grotesk"],
+                    "mono": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .copper-gradient {
+            background: linear-gradient(135deg, #ffb784 0%, #d07c39 100%);
+        }
+        .obsidian-texture {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body obsidian-texture min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-6 h-16 w-full fixed top-0 z-50 bg-slate-950/80 backdrop-blur-xl bg-slate-900">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="rugged male mining professional with orange hardhat and focused expression in industrial setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOyEY-tpi2lOeUBbWg2Hfyt5gtrI2UiDIQreyMEseBCk_uD_gUhhPec2J1dvx1_ZSXTEhIEbY9Lj3hSrEK918f1t4u--LcsioXXkzwTUVl8_MPAncwDMa9Iji2afz9feJTFcWM1sBvmsSGl5w6qta3wG36dHd8lxtpWa8TGjW8eJ6rHsJC8dyTjIVClyNrhVE9hmM96wtXszzAcxZKfe3g0ajmjMgi4Q5cmt1C31wP2Z8II6ifhhMokqzG1yhH-OgIi5X_Y2ZpC_8"/>
+</div>
+<h1 class="text-orange-400 font-['Space_Grotesk'] tracking-tighter uppercase font-bold text-lg">MINERAL WALLET</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-orange-400">notifications_active</span>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-4xl mx-auto space-y-8">
+<!-- Header Section -->
+<section class="flex items-center gap-4 mb-2">
+<span class="material-symbols-outlined text-secondary text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">monitor_heart</span>
+<h2 class="text-4xl font-headline font-bold tracking-tighter uppercase">Mi Salud</h2>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Fatigue Monitor: Large Gauge -->
+<div class="md:col-span-2 bg-surface-container-low p-8 relative overflow-hidden group">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="text-label text-slate-500 uppercase tracking-widest text-xs font-bold mb-1">Fatigue Monitor</p>
+<h3 class="text-3xl font-headline font-bold text-tertiary">ÓPTIMO</h3>
+</div>
+<span class="material-symbols-outlined text-tertiary-container text-3xl">bolt</span>
+</div>
+<div class="relative h-48 flex items-end justify-center mb-6">
+<!-- Gauge Mockup -->
+<div class="absolute inset-0 border-[16px] border-surface-container-highest rounded-t-full"></div>
+<div class="absolute inset-0 border-[16px] border-tertiary rounded-t-full" style="clip-path: polygon(0 0, 85% 0, 85% 100%, 0% 100%);"></div>
+<div class="text-center z-10 pb-4">
+<p class="font-mono text-5xl font-black text-on-background">94<span class="text-xl text-slate-500">%</span></p>
+<p class="text-[10px] uppercase tracking-tighter text-slate-400">Readiness Score</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 border-t border-outline-variant/10 pt-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">bedtime</span>
+<div>
+<p class="text-[10px] text-slate-500 uppercase">Sleep Quality</p>
+<p class="font-mono font-bold text-on-background">07:45H</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">engineering</span>
+<div>
+<p class="text-[10px] text-slate-500 uppercase">Shift Load</p>
+<p class="font-mono font-bold text-on-background">NORMAL</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Hydration Tracker -->
+<div class="bg-surface-container-high p-6 flex flex-col justify-between min-h-[320px]">
+<div>
+<div class="flex items-center justify-between mb-8">
+<span class="material-symbols-outlined text-secondary-container text-4xl">water_drop</span>
+<p class="font-mono text-sm text-secondary-container">62%</p>
+</div>
+<h3 class="text-xl font-headline font-bold mb-2">Hydration</h3>
+<p class="text-slate-400 text-sm mb-6">Daily goal: 4.0L</p>
+<div class="w-full bg-surface-container-highest h-3 mb-2">
+<div class="h-full bg-secondary-container" style="width: 62%"></div>
+</div>
+<p class="font-mono text-lg font-bold">2.5L <span class="text-slate-500 text-sm">/ 4.0L</span></p>
+</div>
+<button class="w-full py-4 border border-secondary-container text-secondary-container font-headline font-bold text-sm uppercase tracking-widest hover:bg-secondary-container hover:text-on-secondary transition-all flex items-center justify-center gap-2 active:scale-95 duration-150">
+<span class="material-symbols-outlined text-sm">add</span>
+                    + Vaso
+                </button>
+</div>
+<!-- Medical Exams Card -->
+<div class="bg-surface-container p-6 border-l-4 border-primary">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">event_upcoming</span>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-1 font-bold">PRÓXIMO</span>
+</div>
+<h3 class="text-xl font-headline font-bold mb-1">Exámenes Médicos</h3>
+<p class="font-mono text-primary font-bold text-2xl mb-4 tracking-tighter">15 DE MAYO</p>
+<div class="space-y-3">
+<p class="text-xs uppercase text-slate-500 font-bold tracking-widest border-b border-outline-variant/20 pb-2">Checklist Previo</p>
+<div class="flex items-center gap-3 text-sm text-on-surface">
+<span class="material-symbols-outlined text-tertiary text-lg">check_circle</span>
+<span>Ayuno de 12 horas</span>
+</div>
+<div class="flex items-center gap-3 text-sm text-on-surface">
+<span class="material-symbols-outlined text-slate-600 text-lg">radio_button_unchecked</span>
+<span>Documento de Identidad</span>
+</div>
+<div class="flex items-center gap-3 text-sm text-on-surface">
+<span class="material-symbols-outlined text-slate-600 text-lg">radio_button_unchecked</span>
+<span>Uniforme de Faena</span>
+</div>
+</div>
+</div>
+<!-- Health Metrics Cluster -->
+<div class="bg-surface-container-low p-6 flex flex-col justify-between">
+<div>
+<h3 class="text-sm font-headline font-bold uppercase tracking-[0.2em] text-slate-500 mb-6">Core Metrics</h3>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error">favorite</span>
+<span class="text-sm text-slate-400">Heart Rate</span>
+</div>
+<p class="font-mono font-bold text-xl">72 <span class="text-[10px] text-slate-500 font-normal">BPM</span></p>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">footprint</span>
+<span class="text-sm text-slate-400">Steps</span>
+</div>
+<p class="font-mono font-bold text-xl">8.4k <span class="text-[10px] text-slate-500 font-normal">STEPS</span></p>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">nights_stay</span>
+<span class="text-sm text-slate-400">Deep Sleep</span>
+</div>
+<p class="font-mono font-bold text-xl">2.1h <span class="text-[10px] text-slate-500 font-normal">CYCLES</span></p>
+</div>
+</div>
+</div>
+</div>
+<!-- Mental Health Card -->
+<div class="relative bg-surface-container-highest p-6 overflow-hidden group">
+<!-- Background Decorative Element -->
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-secondary/10 rounded-full blur-3xl group-hover:bg-secondary/20 transition-all duration-700"></div>
+<div class="relative z-10">
+<span class="material-symbols-outlined text-secondary text-4xl mb-4">psychology</span>
+<h3 class="text-lg font-headline font-bold mb-2">Soporte Mental</h3>
+<p class="text-sm text-slate-400 mb-6">Porque tu bienestar emocional es el motor de tu seguridad.</p>
+<a class="flex items-center gap-3 p-4 bg-surface-container-low border border-secondary/20 hover:border-secondary transition-colors" href="tel:0800-MINERAL">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">call</span>
+</div>
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Línea confidencial 24/7</p>
+<p class="font-mono font-bold text-on-surface">CONÉCTATE AHORA</p>
+</div>
+</a>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 bg-slate-950/90 backdrop-blur-2xl h-24 shadow-[0_-10px_30px_rgba(200,117,51,0.06)]">
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest">Inicio</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined mb-1">account_balance_wallet</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest">Plata</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center -mt-8 mb-1 border-4 border-background">
+<span class="material-symbols-outlined text-error">shield</span>
+</div>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest">SOS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-orange-400 font-black active:scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined mb-1">monitor_heart</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest">Salud</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest">Perfil</span>
+</button>
+</nav>
+</body></html>

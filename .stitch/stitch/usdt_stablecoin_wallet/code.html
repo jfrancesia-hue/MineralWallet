@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Be+Vietnam+Pro:wght@100;300;400;500;700;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#dfe2f3",
+                    "primary-fixed": "#ffdcc6",
+                    "inverse-on-surface": "#2c303d",
+                    "surface": "#0f131f",
+                    "tertiary-container": "#00a575",
+                    "secondary-container": "#00e3fd",
+                    "inverse-surface": "#dfe2f3",
+                    "background": "#0f131f",
+                    "on-tertiary-fixed": "#002114",
+                    "on-primary-fixed": "#301400",
+                    "tertiary-fixed": "#63fcc0",
+                    "on-surface-variant": "#dac2b4",
+                    "tertiary": "#3fdfa5",
+                    "surface-container-highest": "#313442",
+                    "tertiary-fixed-dim": "#3fdfa5",
+                    "on-tertiary-fixed-variant": "#005138",
+                    "outline-variant": "#544339",
+                    "outline": "#a28d80",
+                    "on-error-container": "#ffdad6",
+                    "surface-container": "#1b1f2c",
+                    "surface-tint": "#ffb784",
+                    "secondary-fixed-dim": "#00daf3",
+                    "on-tertiary-container": "#003120",
+                    "surface-container-high": "#262a37",
+                    "on-primary": "#4f2500",
+                    "surface-variant": "#313442",
+                    "secondary": "#bdf4ff",
+                    "surface-dim": "#0f131f",
+                    "surface-bright": "#353946",
+                    "surface-container-low": "#171b28",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#004f58",
+                    "primary-fixed-dim": "#ffb784",
+                    "on-secondary-container": "#00616d",
+                    "on-secondary-fixed": "#001f24",
+                    "on-primary-fixed-variant": "#713700",
+                    "on-tertiary": "#003825",
+                    "on-surface": "#dfe2f3",
+                    "primary-container": "#d07c39",
+                    "error": "#ffb4ab",
+                    "primary": "#ffb784",
+                    "inverse-primary": "#934b07",
+                    "secondary-fixed": "#9cf0ff",
+                    "on-secondary": "#00363d",
+                    "on-primary-container": "#451f00",
+                    "surface-container-lowest": "#0a0e1a",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Space Grotesk"],
+                    "mono": ["JetBrains Mono"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #0f131f;
+            color: #dfe2f3;
+        }
+        .copper-gradient {
+            background: linear-gradient(135deg, #ffb784 0%, #d07c39 100%);
+        }
+        .topo-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 380c20-5 40-5 60 0s40 15 60 15 40-5 60-15 40-15 60-15 40 5 60 15 40 15 60 15h40v20H0v-20zm0-40c20-5 40-5 60 0s40 15 60 15 40-5 60-15 40-15 60-15 40 5 60 15 40 15 60 15h40v20H0v-20zm0-40c20-5 40-5 60 0s40 15 60 15 40-5 60-15 40-15 60-15 40 5 60 15 40 15 60 15h40v20H0v-20zm0-40c20-5 40-5 60 0s40 15 60 15 40-5 60-15 40-15 60-15 40 5 60 15 40 15 60 15h40v20H0v-20z' fill='%23ffb784' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen pb-32 topo-overlay">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-6 h-16 w-full fixed top-0 z-50 bg-slate-950/80 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-orange-400" data-icon="shield" style="font-variation-settings: 'FILL' 1;">shield</span>
+<h1 class="font-['Space_Grotesk'] tracking-tighter uppercase font-bold text-lg text-orange-400">MINERAL WALLET</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 text-xl" data-icon="notifications_active">notifications_active</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a professional miner with a weathered face and orange safety helmet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_uT6paP4r5qcO04UbWzu23ILi53zc6iv1rnz2ke5FJE7SL8TddgJ-ClOrxqcfiFMTBYpk4kKE-Fct3qdOQzl-ANesSKT3x0ZnRJfZX09hhsZzH0sshEif6BiIInlVYa3gZ03oIDU8W2HtY5eQCbKchTnHFcY0Y89njOYhbiJkHb1spxwvos-Sn8jpfMnr9PD9yZ5PGApV7gnsgnB4-pjJwpf1Z5837Bvfpg097r28dSDRCdcHk-D1p-inyyMhZFtZxFdu90Q2EfM"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-5xl mx-auto space-y-8">
+<!-- Hero Section: Title & Value -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-1">
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<span class="font-label text-xs tracking-widest uppercase font-bold">Stablecoin Protocol</span>
+</div>
+<h2 class="font-headline text-4xl md:text-6xl font-black tracking-tighter leading-none">Resguardo de Valor</h2>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl md:min-w-[320px] border-l-4 border-secondary relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl" data-icon="shield">shield</span>
+</div>
+<div class="relative z-10">
+<p class="font-label text-[10px] text-slate-400 uppercase tracking-[0.2em] mb-1">Balance Protegido</p>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-4xl font-bold text-secondary tracking-tight">340.00</span>
+<span class="font-headline text-xl font-bold text-secondary-fixed-dim">USDT</span>
+</div>
+<p class="font-mono text-sm text-slate-500 mt-1">≈ $340.000 ARS</p>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column: Operations -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Chart & Actions Card -->
+<div class="bg-surface-container p-8 rounded-xl space-y-8">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline text-xl font-bold">USDT / ARS</h3>
+<p class="text-xs text-tertiary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+                                +2.4% vs Mes anterior
+                            </p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-[10px] font-bold bg-surface-container-highest rounded text-slate-300 uppercase">1D</button>
+<button class="px-3 py-1 text-[10px] font-bold bg-secondary/20 rounded text-secondary uppercase">1M</button>
+<button class="px-3 py-1 text-[10px] font-bold bg-surface-container-highest rounded text-slate-300 uppercase">1A</button>
+</div>
+</div>
+<!-- Mini Chart Placeholder -->
+<div class="h-40 w-full relative flex items-end gap-1">
+<!-- Simulated Line Chart with SVG -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0 35 Q 20 30, 40 32 T 60 15 T 80 18 T 100 5" fill="none" stroke="#bdf4ff" stroke-width="2"></path>
+<path d="M0 35 Q 20 30, 40 32 T 60 15 T 80 18 T 100 5 V 40 H 0 Z" fill="url(#grad1)" opacity="0.2"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#bdf4ff;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#bdf4ff;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="absolute bottom-0 w-full flex justify-between text-[8px] font-mono text-slate-600 px-1 uppercase">
+<span>01 Oct</span>
+<span>15 Oct</span>
+<span>Hoy</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<button class="copper-gradient h-14 rounded-lg flex items-center justify-center gap-2 font-headline font-bold text-on-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+                            Comprar USDT
+                        </button>
+<button class="h-14 rounded-lg border border-outline-variant flex items-center justify-center gap-2 font-headline font-bold text-on-surface hover:bg-surface-container-high active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="currency_exchange">currency_exchange</span>
+                            Vender a Pesos
+                        </button>
+</div>
+</div>
+<!-- History Table -->
+<div class="bg-surface-container-low p-6 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline text-lg font-bold">Historial de Operaciones</h3>
+<span class="material-symbols-outlined text-slate-500 cursor-pointer" data-icon="filter_list">filter_list</span>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center p-3 rounded hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-tertiary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="call_received">call_received</span>
+</div>
+<div>
+<p class="font-bold text-sm">Compra USDT</p>
+<p class="text-[10px] text-slate-500 font-mono">24 OCT, 2023 • 14:20</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-mono text-sm text-secondary font-bold">+ 150.00 USDT</p>
+<p class="text-[10px] text-slate-500">$150.000 ARS</p>
+</div>
+</div>
+<div class="flex justify-between items-center p-3 rounded hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-error-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-icon="call_made">call_made</span>
+</div>
+<div>
+<p class="font-bold text-sm">Venta a Pesos</p>
+<p class="text-[10px] text-slate-500 font-mono">18 OCT, 2023 • 09:12</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-mono text-sm text-error font-bold">- 50.00 USDT</p>
+<p class="text-[10px] text-slate-500">$49.500 ARS</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Tools & Education -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Calculator -->
+<div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/30">
+<h3 class="font-headline text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="calculate">calculate</span>
+                        Calculadora
+                    </h3>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Tú entregas</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none h-14 px-4 font-mono text-lg rounded focus:ring-1 focus:ring-primary" placeholder="0.00" type="number"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 font-headline font-bold text-sm">ARS</span>
+</div>
+</div>
+<div class="flex justify-center -my-2 relative z-10">
+<div class="bg-surface-container-highest p-2 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="swap_vert">swap_vert</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Tú recibes</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none h-14 px-4 font-mono text-lg rounded focus:ring-1 focus:ring-secondary" placeholder="0.00" type="number"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 font-headline font-bold text-sm">USDT</span>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/20">
+<div class="flex justify-between text-xs text-slate-500">
+<span>Tipo de cambio</span>
+<span class="font-mono">1 USDT = 1000 ARS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Education (Expandable look) -->
+<div class="space-y-3">
+<h3 class="font-headline text-lg font-bold px-2">Centro de Aprendizaje</h3>
+<div class="bg-surface-container-low rounded-lg p-4 border-l-2 border-primary cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="flex justify-between items-center">
+<span class="font-bold text-sm">¿Qué es USDT?</span>
+<span class="material-symbols-outlined text-slate-500" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4 border-l-2 border-primary cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="flex justify-between items-center">
+<span class="font-bold text-sm">¿Es seguro operar?</span>
+<span class="material-symbols-outlined text-slate-500" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4 border-l-2 border-primary cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="flex justify-between items-center">
+<span class="font-bold text-sm">Respaldo y Auditorías</span>
+<span class="material-symbols-outlined text-slate-500" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Promo Banner -->
+<div class="bg-gradient-to-br from-surface-container-highest to-surface rounded-xl p-6 relative overflow-hidden group">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-110 transition-transform duration-700" data-alt="Abstract 3D golden digital coin with complex circuitry textures glowing on a dark obsidian background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmMB03jPeElWmWOttpMFpgnvH7JQZ46A2nYVK85tVtNIqQ_LANzFVGC8QoLU0R_0UugyS9tZogu8Y0jZ3XH9pPKWTXaVPy11uggT-x4p01uSctBE9y6-Mk2dENcyzPVOswOQ3QMsVo1PCstXEKKT5Pkgoub3jmuzDwOrqY_zYad--t1NzdSRUCzX8OZze5coGUEH-GpTEfuY1g-MJ2tWWQ4ARS37zFybh3plvImcYogPIaRu5t9_t6GFgvfpHfG1EQFS_AJY5SU6c"/>
+<div class="relative z-10">
+<p class="font-headline font-bold text-secondary text-sm">Referidos Mineral</p>
+<p class="text-xs text-slate-300 mt-1">Gana 5 USDT por cada minero que se sume a la red.</p>
+<button class="mt-4 text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Invitar ahora</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 bg-slate-950/90 backdrop-blur-2xl h-24 shadow-[0_-10px_30px_rgba(200,117,51,0.06)]">
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="home">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Inicio</span>
+</div>
+<div class="flex flex-col items-center justify-center text-orange-400 font-black scale-110">
+<span class="material-symbols-outlined text-2xl" data-icon="account_balance_wallet" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Plata</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<div class="w-12 h-12 rounded-full copper-gradient flex items-center justify-center -mt-8 shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-primary text-2xl" data-icon="shield" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">SOS</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="monitor_heart">monitor_heart</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Salud</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 hover:text-cyan-300 transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="person">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] uppercase font-bold tracking-widest mt-1">Perfil</span>
+</div>
+</nav>
+</body></html>
