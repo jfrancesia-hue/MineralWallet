@@ -1,9 +1,15 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ViewStyle, TouchableOpacity, Pressable } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../theme/colors';
 import { layout, spacing } from '../../theme/spacing';
 
-type CardVariant = 'default' | 'financial' | 'alert' | 'status';
+// Obsidian Foundry Card
+// Profundidad via surface tiers (NO bordes solidos).
+// Variants: default (surfaceLow), elevated (surfaceContainer), hero (gradient + copper hairline),
+// alert (red tint), status (accent bar).
+
+type CardVariant = 'default' | 'elevated' | 'hero' | 'financial' | 'alert' | 'status';
 
 interface CardProps {
   children: React.ReactNode;
@@ -11,6 +17,7 @@ interface CardProps {
   accentColor?: string;
   onPress?: () => void;
   style?: ViewStyle;
+  glow?: boolean;
 }
 
 export function Card({
@@ -19,10 +26,41 @@ export function Card({
   accentColor,
   onPress,
   style,
+  glow = false,
 }: CardProps) {
-  const cardStyle = [
+  const isPressable = !!onPress;
+
+  // Hero: gradiente diagonal + hairline copper superior
+  if (variant === 'hero' || variant === 'financial') {
+    const Wrapper: any = isPressable ? Pressable : View;
+    return (
+      <Wrapper
+        {...(isPressable ? { onPress } : {})}
+        style={({ pressed }: any) => [
+          styles.base,
+          styles.heroWrapper,
+          style,
+          pressed && styles.pressed,
+        ]}
+      >
+        <LinearGradient
+          colors={colors.surfaceDiagonal}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroGradient}
+        >
+          <View style={styles.hairline} />
+          {glow && <View style={styles.glow} />}
+          <View style={styles.content}>{children}</View>
+        </LinearGradient>
+      </Wrapper>
+    );
+  }
+
+  const cardStyle: any[] = [
     styles.base,
-    variant === 'financial' && styles.financial,
+    variant === 'default' && styles.default,
+    variant === 'elevated' && styles.elevated,
     variant === 'alert' && styles.alert,
     variant === 'status' && accentColor
       ? [styles.status, { borderLeftColor: accentColor }]
@@ -30,15 +68,15 @@ export function Card({
     style,
   ];
 
-  if (onPress) {
+  if (isPressable) {
     return (
-      <TouchableOpacity
+      <Pressable
         onPress={onPress}
-        activeOpacity={0.7}
-        style={cardStyle}
+        style={({ pressed }) => [...cardStyle, pressed && styles.pressed]}
+        android_ripple={{ color: colors.copperSubtle }}
       >
         {children}
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 
@@ -47,34 +85,59 @@ export function Card({
 
 const styles = StyleSheet.create({
   base: {
-    backgroundColor: colors.surface,
-    borderRadius: layout.borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.copperMuted,
-    padding: spacing.lg,
+    borderRadius: layout.borderRadius.lg,
+    padding: spacing.xl,
+    overflow: 'hidden',
   },
-  financial: {
-    backgroundColor: colors.surface,
-    borderRadius: layout.borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.copperMuted,
-    borderTopWidth: 2,
-    borderTopColor: colors.copper,
-    padding: spacing.lg,
+  default: {
+    backgroundColor: colors.surfaceLow,
+  },
+  elevated: {
+    backgroundColor: colors.surfaceContainer,
   },
   alert: {
     backgroundColor: colors.redMuted,
-    borderRadius: layout.borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 59, 74, 0.2)',
-    padding: spacing.lg,
   },
   status: {
-    backgroundColor: colors.surface,
-    borderRadius: layout.borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.copperMuted,
-    borderLeftWidth: 3,
-    padding: spacing.lg,
+    backgroundColor: colors.surfaceLow,
+    borderLeftWidth: layout.accentBarWidth,
+    paddingLeft: spacing.xl - layout.accentBarWidth,
+  },
+  heroWrapper: {
+    padding: 0,
+    borderRadius: layout.borderRadius.xl,
+    backgroundColor: colors.surfaceLow,
+  },
+  heroGradient: {
+    borderRadius: layout.borderRadius.xl,
+    padding: spacing.xl,
+    position: 'relative',
+  },
+  hairline: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: layout.hairlineWidth,
+    backgroundColor: colors.copper,
+    opacity: 0.8,
+  },
+  glow: {
+    position: 'absolute',
+    top: -40,
+    right: -40,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: colors.copperGlow,
+    opacity: 0.4,
+  },
+  content: {
+    position: 'relative',
+    zIndex: 1,
+  },
+  pressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
   },
 });

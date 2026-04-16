@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   quickPill: {
     paddingHorizontal: spacing.lg, paddingVertical: spacing.sm,
     backgroundColor: colors.surface, borderRadius: layout.borderRadius.full,
-    borderWidth: 1, borderColor: colors.copperMuted, minHeight: 36,
+    minHeight: 36,
     justifyContent: 'center',
   },
   continueBtn: { marginBottom: spacing['4xl'] },

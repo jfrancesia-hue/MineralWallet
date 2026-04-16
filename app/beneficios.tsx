@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   categoriesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl },
   categoryCard: {
     width: '47%', backgroundColor: colors.surface, borderRadius: layout.borderRadius.md,
-    padding: spacing.lg, borderWidth: 1, borderColor: colors.copperMuted,
+    padding: spacing.lg, 
     alignItems: 'center', gap: spacing.sm,
   },
   categoryIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },

@@ -61,8 +61,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.copperMuted,
     borderRadius: layout.borderRadius.full,
     paddingHorizontal: spacing.lg,
     minHeight: layout.touchTarget,

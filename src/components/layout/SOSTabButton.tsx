@@ -1,84 +1,121 @@
 import React, { useEffect, useRef } from 'react';
-import { TouchableOpacity, Animated, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Animated, StyleSheet, View, GestureResponderEvent } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Svg, Path } from 'react-native-svg';
 import { colors } from '../../theme/colors';
 import { layout } from '../../theme/spacing';
 
+// Obsidian Foundry SOS tab button
+// Gradient rojo + doble anillo pulsante concentrico. Elevado sobre la tab bar.
+
 interface SOSTabButtonProps {
-  onPress: () => void;
+  onPress?: (e: GestureResponderEvent) => void;
 }
 
 export function SOSTabButton({ onPress }: SOSTabButtonProps) {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const pulseOuter = useRef(new Animated.Value(1)).current;
+  const pulseInner = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.15,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    animation.start();
-    return () => animation.stop();
-  }, [pulseAnim]);
+    const makeLoop = (val: Animated.Value, toValue: number, duration: number, delay = 0) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(val, { toValue, duration, useNativeDriver: true }),
+          Animated.timing(val, { toValue: 1, duration, useNativeDriver: true }),
+        ])
+      );
+
+    const outer = makeLoop(pulseOuter, 1.35, 1400);
+    const inner = makeLoop(pulseInner, 1.12, 1000, 300);
+    outer.start();
+    inner.start();
+    return () => {
+      outer.stop();
+      inner.stop();
+    };
+  }, [pulseOuter, pulseInner]);
 
   return (
     <View style={styles.container}>
       <Animated.View
         style={[
-          styles.pulseRing,
-          { transform: [{ scale: pulseAnim }] },
+          styles.pulseRingOuter,
+          { transform: [{ scale: pulseOuter }], opacity: pulseOuter.interpolate({ inputRange: [1, 1.35], outputRange: [0.4, 0] }) },
+        ]}
+      />
+      <Animated.View
+        style={[
+          styles.pulseRingInner,
+          { transform: [{ scale: pulseInner }] },
         ]}
       />
       <TouchableOpacity
         onPress={onPress}
-        activeOpacity={0.8}
-        style={styles.button}
+        activeOpacity={0.85}
+        style={styles.touchable}
       >
-        <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
-          <Path
-            d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-            fill={colors.textPrimary}
-          />
-        </Svg>
+        <LinearGradient
+          colors={[colors.red, colors.redDark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.button}
+        >
+          <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+            <Path
+              d="M12 2L2 20h20L12 2z"
+              stroke={colors.textPrimary}
+              strokeWidth={2}
+              strokeLinejoin="round"
+              fill="none"
+            />
+            <Path d="M12 9v4" stroke={colors.textPrimary} strokeWidth={2.2} strokeLinecap="round" />
+            <Path d="M12 17h.01" stroke={colors.textPrimary} strokeWidth={2.4} strokeLinecap="round" />
+          </Svg>
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
 }
+
+const size = layout.sosButtonSize;
 
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
-    top: -20,
+    top: -22,
+    width: size + 40,
+    height: size + 40,
   },
-  pulseRing: {
+  pulseRingOuter: {
     position: 'absolute',
-    width: layout.sosButtonSize + 16,
-    height: layout.sosButtonSize + 16,
-    borderRadius: (layout.sosButtonSize + 16) / 2,
+    width: size + 24,
+    height: size + 24,
+    borderRadius: (size + 24) / 2,
     backgroundColor: colors.redGlow,
   },
+  pulseRingInner: {
+    position: 'absolute',
+    width: size + 10,
+    height: size + 10,
+    borderRadius: (size + 10) / 2,
+    backgroundColor: 'rgba(255, 85, 85, 0.35)',
+  },
+  touchable: {
+    borderRadius: size / 2,
+  },
   button: {
-    width: layout.sosButtonSize,
-    height: layout.sosButtonSize,
-    borderRadius: layout.sosButtonSize / 2,
-    backgroundColor: colors.red,
+    width: size,
+    height: size,
+    borderRadius: size / 2,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.red,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOpacity: 0.5,
+    shadowRadius: 14,
+    elevation: 10,
   },
 });

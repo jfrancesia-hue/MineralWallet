@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   supervisorCard: { marginBottom: spacing.lg, gap: 2 },
   summaryCard: { marginBottom: spacing.xl },
   summaryTitle: { marginBottom: spacing.lg },
-  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.copperMuted },
+  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.md, },
   swapBtn: { marginTop: spacing.lg },
   calendarSection: { marginBottom: spacing.xl },
   calendarTitle: { marginBottom: spacing.md },

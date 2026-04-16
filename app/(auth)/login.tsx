@@ -247,8 +247,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.copperMuted,
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',

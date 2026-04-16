@@ -8,3 +8,6 @@ export { ActionCircle } from './ActionCircle';
 export { ProgressBar } from './ProgressBar';
 export { Avatar } from './Avatar';
 export { Skeleton, SkeletonCard, SkeletonList } from './Skeleton';
+export { TopographicBackground } from './TopographicBackground';
+export { OreGauge } from './OreGauge';
+export { PrecisionChip } from './PrecisionChip';

@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   filterRow: { flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.xl },
   filterPill: {
     paddingHorizontal: spacing.lg, paddingVertical: spacing.sm,
-    borderRadius: layout.borderRadius.full, borderWidth: 1, borderColor: colors.copperMuted,
+    borderRadius: layout.borderRadius.full, 
     minHeight: 36, justifyContent: 'center',
   },
   filterActive: { backgroundColor: colors.copper, borderColor: colors.copper },

@@ -268,9 +268,7 @@ const metricStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.copperMuted,
+    paddingVertical: spacing.lg,
   },
   icon: {
     width: 32,
@@ -329,13 +327,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   gaugeBox: {
-    width: 160,
-    height: 120,
-    borderRadius: layout.borderRadius.md,
-    borderWidth: 2,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    borderWidth: 8,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
+    backgroundColor: colors.surfaceHigh,
   },
   fatigueMetrics: {
     flexDirection: 'row',
@@ -365,8 +364,6 @@ const styles = StyleSheet.create({
   },
   moodSelected: {
     backgroundColor: colors.copperMuted,
-    borderWidth: 1,
-    borderColor: colors.copper,
   },
   hydrationCard: {
     marginBottom: spacing.lg,

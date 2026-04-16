@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   heroText: { flex: 1, gap: spacing.xs },
   heroStat: { alignItems: 'flex-end' },
   amountCard: { marginBottom: spacing.xl },
-  autoSendRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.copperMuted },
+  autoSendRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: spacing.md, },
   totalTitle: { marginTop: spacing.xl, marginBottom: spacing.md },
   totalRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm },
   totalBarContainer: { flex: 1 },

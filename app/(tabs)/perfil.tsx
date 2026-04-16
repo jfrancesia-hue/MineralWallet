@@ -83,6 +83,7 @@ export default function PerfilScreen() {
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
               <Text variant="h1" color={colors.copper}>{initials}</Text>
+              <View style={styles.avatarRing} pointerEvents="none" />
             </View>
             <TouchableOpacity style={styles.cameraButton}>
               <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
@@ -197,11 +198,25 @@ const styles = StyleSheet.create({
     width: layout.avatarXl,
     height: layout.avatarXl,
     borderRadius: layout.avatarXl / 2,
-    backgroundColor: colors.surface,
-    borderWidth: 3,
-    borderColor: colors.copper,
+    backgroundColor: colors.surfaceHigh,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: colors.copper,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  avatarRing: {
+    position: 'absolute',
+    top: -3,
+    left: -3,
+    right: -3,
+    bottom: -3,
+    borderRadius: (layout.avatarXl + 6) / 2,
+    borderWidth: 2,
+    borderColor: colors.copper,
+    opacity: 0.6,
   },
   cameraButton: {
     position: 'absolute',
@@ -223,10 +238,8 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderRadius: layout.borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.copperMuted,
+    backgroundColor: colors.surfaceLow,
+    borderRadius: layout.borderRadius.lg,
     marginBottom: spacing['2xl'],
     padding: spacing.lg,
   },
@@ -236,20 +249,23 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   statBorder: {
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderColor: colors.copperMuted,
+    backgroundColor: colors.surfaceContainer,
+    borderRadius: layout.borderRadius.sm,
+    marginHorizontal: spacing.xs,
+    paddingVertical: spacing.sm,
   },
   settingsList: {
-    gap: 0,
+    gap: spacing.xs,
+    marginTop: spacing.sm,
   },
   settingsItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.copperMuted,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.surfaceLow,
+    borderRadius: layout.borderRadius.sm,
     minHeight: layout.touchTarget,
   },
   settingsLeft: {
@@ -261,7 +277,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceHigh,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -284,7 +300,6 @@ const styles = StyleSheet.create({
   },
   version: {
     marginTop: spacing.lg,
-    fontFamily: 'JetBrainsMono',
   },
   bottomSpacer: {
     height: layout.tabBarHeight + spacing['2xl'],

@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { useFonts } from 'expo-font';
+import { useFonts as useSpaceGrotesk, SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
+import { useFonts as useBeVietnam, BeVietnamPro_400Regular, BeVietnamPro_500Medium, BeVietnamPro_600SemiBold, BeVietnamPro_700Bold } from '@expo-google-fonts/be-vietnam-pro';
+import { useFonts as useJetBrains, JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fonts/jetbrains-mono';
 import * as SplashScreen from 'expo-splash-screen';
 import { colors } from '../src/theme/colors';
 import { useAuthStore } from '../src/stores';
@@ -19,17 +21,23 @@ export default function RootLayout() {
   usePushNotifications();
   useRealtimeNotifications();
 
-  const [fontsLoaded] = useFonts({
-    'JetBrainsMono': require('../src/assets/fonts/JetBrainsMono-Regular.ttf'),
-    'JetBrainsMono-Bold': require('../src/assets/fonts/JetBrainsMono-Bold.ttf'),
-    'Outfit': require('../src/assets/fonts/Outfit-Regular.ttf'),
-    'Outfit-Medium': require('../src/assets/fonts/Outfit-Medium.ttf'),
-    'Outfit-SemiBold': require('../src/assets/fonts/Outfit-SemiBold.ttf'),
-    'Outfit-Bold': require('../src/assets/fonts/Outfit-Bold.ttf'),
-    'DMSans': require('../src/assets/fonts/DMSans-Regular.ttf'),
-    'DMSans-Medium': require('../src/assets/fonts/DMSans-Medium.ttf'),
-    'DMSans-Bold': require('../src/assets/fonts/DMSans-Bold.ttf'),
+  const [spaceLoaded] = useSpaceGrotesk({
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
   });
+  const [bodyLoaded] = useBeVietnam({
+    BeVietnamPro_400Regular,
+    BeVietnamPro_500Medium,
+    BeVietnamPro_600SemiBold,
+    BeVietnamPro_700Bold,
+  });
+  const [monoLoaded] = useJetBrains({
+    JetBrainsMono_400Regular,
+    JetBrainsMono_700Bold,
+  });
+
+  const fontsLoaded = spaceLoaded && bodyLoaded && monoLoaded;
 
   useEffect(() => {
     if (fontsLoaded) {

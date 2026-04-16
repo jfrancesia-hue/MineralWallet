@@ -4,12 +4,14 @@ import {
   TextInput,
   StyleSheet,
   TextInputProps,
-  TouchableOpacity,
 } from 'react-native';
 import { Text } from './Text';
 import { colors } from '../../theme/colors';
 import { layout, spacing } from '../../theme/spacing';
 import { fontFamilies } from '../../theme/typography';
+
+// Obsidian Foundry Input
+// Filled container (surfaceHigh). Sin bordes. En focus: surfaceHighest + glow copper sutil.
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -33,7 +35,7 @@ export function Input({
   return (
     <View style={styles.container}>
       {label && (
-        <Text variant="labelSm" color={focused ? colors.cyan : colors.copper} style={styles.label}>
+        <Text variant="labelSm" color={focused ? colors.copper : colors.textSecondary} style={styles.label}>
           {label}
         </Text>
       )}
@@ -44,11 +46,7 @@ export function Input({
           error ? styles.error : null,
         ]}
       >
-        {icon && (
-          <View style={styles.icon}>
-            {icon}
-          </View>
-        )}
+        {icon && <View style={styles.icon}>{icon}</View>}
         <TextInput
           style={[styles.input, style]}
           placeholderTextColor={colors.textMuted}
@@ -79,28 +77,26 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   label: {
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.copperMuted,
+    backgroundColor: colors.surfaceHigh,
     borderRadius: layout.borderRadius.sm,
     minHeight: layout.touchTarget,
     paddingHorizontal: spacing.lg,
   },
   focused: {
-    borderColor: colors.copper,
+    backgroundColor: colors.surfaceHighest,
     shadowColor: colors.copper,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
   },
   error: {
-    borderColor: colors.red,
+    backgroundColor: colors.redMuted,
   },
   icon: {
     marginRight: spacing.md,
@@ -108,7 +104,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontFamily: fontFamilies.body,
-    fontSize: 16,
+    fontSize: 15,
     color: colors.textPrimary,
     paddingVertical: spacing.md,
   },

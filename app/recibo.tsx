@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   monthRow: { flexDirection: 'row', gap: spacing.sm },
   monthPill: {
     paddingHorizontal: spacing.xl, paddingVertical: spacing.md,
-    borderRadius: layout.borderRadius.sm, borderWidth: 1, borderColor: colors.copperMuted,
+    borderRadius: layout.borderRadius.sm, 
     minHeight: 40, justifyContent: 'center',
   },
   monthActive: { backgroundColor: colors.copper, borderColor: colors.copper },
@@ -183,12 +183,12 @@ const styles = StyleSheet.create({
   sectionLabel: { marginTop: spacing.lg, marginBottom: spacing.md },
   lineItem: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.copperMuted,
+    paddingVertical: spacing.sm, 
   },
   totalLine: { borderBottomWidth: 0, paddingTop: spacing.md },
   netoSection: {
     marginTop: spacing.xl, padding: spacing.lg, backgroundColor: `${colors.copper}08`,
-    borderRadius: layout.borderRadius.md, borderWidth: 1, borderColor: colors.copperMuted,
+    borderRadius: layout.borderRadius.md, 
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
   shareBtn: { marginTop: spacing.sm },

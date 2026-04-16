@@ -10,7 +10,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from './Text';
 import { colors } from '../../theme/colors';
 import { layout, spacing } from '../../theme/spacing';
-import { typography } from '../../theme/typography';
+
+// Obsidian Foundry Button
+// Primary: copper gradient, 4px corners, industrial stamp feel.
+// Secondary: surfaceContainer (NO border), text copper.
+// Danger: solid red.
+// Ghost: transparent, text copper, underline on press.
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -47,16 +52,22 @@ export function Button({
   const isDisabled = disabled || loading;
   const sizeStyle = sizeMap[size];
 
+  const getTextColor = () => {
+    if (variant === 'primary') return colors.background;
+    if (variant === 'danger') return colors.textPrimary;
+    return colors.copper;
+  };
+
   const content = (
     <View style={styles.content}>
       {loading ? (
-        <ActivityIndicator color={variant === 'ghost' ? colors.copper : colors.textPrimary} />
+        <ActivityIndicator color={variant === 'primary' ? colors.background : colors.copper} />
       ) : (
         <>
           {icon && <View style={styles.icon}>{icon}</View>}
           <Text
             variant={size === 'sm' ? 'buttonSm' : 'button'}
-            color={variant === 'secondary' ? colors.copper : variant === 'ghost' ? colors.copper : colors.textPrimary}
+            color={getTextColor()}
           >
             {title}
           </Text>
@@ -70,13 +81,13 @@ export function Button({
       <TouchableOpacity
         onPress={onPress}
         disabled={isDisabled}
-        activeOpacity={0.8}
+        activeOpacity={0.88}
         style={[fullWidth && styles.fullWidth, style]}
       >
         <LinearGradient
-          colors={[colors.copper, colors.copperLight]}
+          colors={colors.copperGradient}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+          end={{ x: 1, y: 0.8 }}
           style={[
             styles.base,
             { height: sizeStyle.height, paddingHorizontal: sizeStyle.paddingHorizontal },
@@ -115,7 +126,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: layout.borderRadius.sm,
+    borderRadius: layout.borderRadius.sm, // 4px industrial default
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: layout.touchTarget,
@@ -129,18 +140,16 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   secondary: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.copper,
+    backgroundColor: colors.surfaceContainer,
   },
   danger: {
     backgroundColor: colors.red,
   },
   ghost: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.transparent,
   },
   disabled: {
-    opacity: 0.4,
+    opacity: 0.38,
   },
   fullWidth: {
     width: '100%',

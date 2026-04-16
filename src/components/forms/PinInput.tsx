@@ -96,8 +96,6 @@ const styles = StyleSheet.create({
     height: layout.touchTarget,
     borderRadius: layout.borderRadius.sm,
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: colors.copperMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },

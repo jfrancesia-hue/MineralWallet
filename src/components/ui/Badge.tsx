@@ -11,25 +11,28 @@ interface BadgeProps {
   variant?: BadgeVariant;
   icon?: React.ReactNode;
   style?: ViewStyle;
+  solid?: boolean;
 }
 
-const variantStyles: Record<BadgeVariant, { bg: string; text: string }> = {
-  copper: { bg: 'rgba(200, 117, 51, 0.15)', text: colors.copper },
-  cyan: { bg: colors.cyanMuted, text: colors.cyan },
-  emerald: { bg: colors.emeraldMuted, text: colors.emerald },
-  red: { bg: colors.redMuted, text: colors.red },
-  amber: { bg: colors.amberMuted, text: colors.amber },
-  purple: { bg: colors.purpleMuted, text: colors.purple },
-  default: { bg: 'rgba(255,255,255,0.06)', text: colors.textSecondary },
+const variantTokens: Record<BadgeVariant, { muted: string; solid: string; text: string }> = {
+  copper: { muted: colors.copperMuted, solid: colors.copper, text: colors.copper },
+  cyan: { muted: colors.cyanMuted, solid: colors.cyan, text: colors.cyan },
+  emerald: { muted: colors.emeraldMuted, solid: colors.emerald, text: colors.emerald },
+  red: { muted: colors.redMuted, solid: colors.red, text: colors.red },
+  amber: { muted: colors.amberMuted, solid: colors.amber, text: colors.amber },
+  purple: { muted: colors.purpleMuted, solid: colors.purple, text: colors.purple },
+  default: { muted: colors.surfaceHigh, solid: colors.surfaceHighest, text: colors.textSecondary },
 };
 
-export function Badge({ label, variant = 'default', icon, style }: BadgeProps) {
-  const { bg, text } = variantStyles[variant];
+export function Badge({ label, variant = 'default', icon, style, solid = false }: BadgeProps) {
+  const tokens = variantTokens[variant];
+  const bg = solid ? tokens.solid : tokens.muted;
+  const textColor = solid ? colors.background : tokens.text;
 
   return (
     <View style={[styles.badge, { backgroundColor: bg }, style]}>
       {icon && <View style={styles.icon}>{icon}</View>}
-      <Text variant="caption" color={text}>
+      <Text variant="labelSm" color={textColor}>
         {label}
       </Text>
     </View>
@@ -41,8 +44,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: layout.borderRadius.full,
+    paddingVertical: 6,
+    borderRadius: layout.borderRadius.sm,
     alignSelf: 'flex-start',
   },
   icon: {

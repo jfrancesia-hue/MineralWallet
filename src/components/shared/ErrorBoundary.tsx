@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     marginBottom: spacing.xl,
-    fontFamily: 'JetBrainsMono',
+    fontFamily: 'JetBrainsMono_400Regular',
     maxWidth: '90%',
   },
   retryBtn: {

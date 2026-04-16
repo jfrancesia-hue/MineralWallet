@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   upgradeNote: { marginTop: spacing.md, padding: spacing.md, backgroundColor: colors.elevated, borderRadius: layout.borderRadius.sm },
   rankingCard: { marginBottom: spacing.xl },
   rankingHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  rankRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.copperMuted },
+  rankRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md, },
   rankHighlight: { backgroundColor: `${colors.copper}08`, borderRadius: layout.borderRadius.sm, paddingHorizontal: spacing.sm },
   rankName: { flex: 1, marginLeft: spacing.md },
   sectionTitle: { marginBottom: spacing.md, marginTop: spacing.lg },
